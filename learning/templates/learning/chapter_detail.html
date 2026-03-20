@@ -1,0 +1,579 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ chapter.title }} | StoryLearnC++</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #233b8f;
+  --navy-dark: #172869;
+  --navy-deeper: #0f1d4a;
+  --accent: #f5a623;
+  --accent-light: #ffd07a;
+  --teal: #1ab8d8;
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --text: #1e293b;
+  --muted: #5a6a8a;
+  --border: #d8e2f8;
+  --card-shadow: 0 4px 24px rgba(35,59,143,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+  line-height:1.6;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from{opacity:0}to{opacity:1} }
+@keyframes slideDown { from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
+@keyframes gradientShift {
+  0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+}
+
+/* ── HEADER ── */
+header {
+  background:var(--navy);
+  box-shadow:0 2px 24px rgba(15,29,74,0.30);
+  position:sticky; top:0; z-index:100; flex-shrink:0;
+  transition:transform 0.3s ease; animation:fadeIn 0.5s ease both;
+}
+.navbar {
+  max-width:1200px; margin:auto; padding:0 40px; height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  color:#fff; font-size:20px; font-weight:800; letter-spacing:-0.3px; text-decoration:none;
+}
+.logo-icon {
+  width:36px; height:36px; background:var(--accent); border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:18px; transition:transform 0.3s;
+}
+.logo:hover .logo-icon { transform:rotate(-8deg) scale(1.1); }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-links a {
+  color:rgba(255,255,255,0.80); text-decoration:none;
+  padding:8px 15px; border-radius:8px; font-size:14px; font-weight:500;
+  transition:all 0.2s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:4px; left:50%; right:50%;
+  height:2px; background:var(--accent); border-radius:2px;
+  transition:left 0.25s,right 0.25s;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,0.09); }
+.nav-links a:hover::after { left:15px; right:15px; }
+.nav-links .btn-nav {
+  background:var(--accent); color:var(--navy-dark); font-weight:700;
+  padding:8px 22px; border-radius:8px; margin-left:6px;
+  box-shadow:0 2px 12px rgba(245,166,35,0.35); transition:all 0.25s;
+}
+.nav-links .btn-nav::after { display:none; }
+.nav-links .btn-nav:hover { background:var(--accent-light); transform:translateY(-2px); }
+
+/* ── CHAPTER HERO BANNER ── */
+.chapter-hero {
+  background:linear-gradient(135deg, var(--navy) 0%, #1c318a 50%, var(--navy-deeper) 100%);
+  background-size:200% 200%; animation:gradientShift 8s ease infinite;
+  padding:52px 40px; position:relative; overflow:hidden;
+}
+.chapter-hero::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at top right, rgba(26,184,216,0.18) 0%, transparent 55%),
+             radial-gradient(ellipse at bottom left, rgba(245,166,35,0.10) 0%, transparent 55%);
+}
+.chapter-hero-inner {
+  max-width:1000px; margin:auto; position:relative; z-index:1;
+  animation:slideDown 0.6s cubic-bezier(.22,.68,0,1.2) both;
+}
+.chapter-breadcrumb {
+  display:flex; align-items:center; gap:8px; margin-bottom:20px;
+}
+.chapter-breadcrumb a {
+  color:rgba(255,255,255,0.60); text-decoration:none; font-size:13px; font-weight:500;
+  transition:color 0.2s;
+}
+.chapter-breadcrumb a:hover { color:var(--accent); }
+.chapter-breadcrumb .sep { color:rgba(255,255,255,0.30); font-size:13px; }
+.chapter-breadcrumb .current { color:rgba(255,255,255,0.90); font-size:13px; font-weight:600; }
+.chapter-hero h1 {
+  font-family:'Press Start 2P', cursive;
+  font-size:20px; color:#fff; line-height:1.6;
+  margin-bottom:20px; letter-spacing:-0.5px;
+}
+.chapter-hero-meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.85);
+  font-size:12px; font-weight:600; padding:5px 12px; border-radius:16px;
+  border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px);
+}
+.back-btn {
+  margin-left:auto; display:inline-flex; align-items:center; gap:8px;
+  background:var(--accent); color:var(--navy-dark);
+  padding:9px 20px; border-radius:9px; text-decoration:none;
+  font-size:13px; font-weight:700; transition:all 0.25s;
+  box-shadow:0 2px 12px rgba(245,166,35,0.35);
+}
+.back-btn:hover { background:var(--accent-light); transform:translateY(-2px); }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  max-width:1000px; margin:0 auto; width:100%;
+  padding:48px 40px 60px;
+  flex:1;
+}
+
+/* ── CONTENT CARD ── */
+.content-card {
+  background:var(--white); border-radius:24px;
+  border:1px solid var(--border); box-shadow:var(--card-shadow);
+  padding:56px 64px;
+  animation:slideUp 0.6s cubic-bezier(.22,.68,0,1.2) 0.15s both;
+}
+
+/* ════════════════════════════════════════
+   CHAPTER CONTENT — all fixes live here
+   ════════════════════════════════════════ */
+.chapter-content {
+  font-size:16px;
+  color:var(--text);
+  line-height:1.9;
+}
+
+.chapter-content h1 {
+  font-family:'Press Start 2P', cursive;
+  font-size:18px; color:var(--navy-dark);
+  margin-top:40px; margin-bottom:16px; line-height:1.7;
+  padding-bottom:12px; border-bottom:2px solid var(--border);
+}
+.chapter-content h2 {
+  font-family:'Press Start 2P', cursive;
+  font-size:13px; color:var(--navy);
+  margin-top:36px; margin-bottom:14px; line-height:1.7;
+}
+.chapter-content h3 {
+  font-size:18px; font-weight:800; color:var(--navy-dark);
+  margin-top:32px; margin-bottom:12px;
+}
+.chapter-content h4 {
+  font-size:16px; font-weight:700; color:var(--navy);
+  margin-top:22px; margin-bottom:10px;
+}
+
+.chapter-content p {
+  font-size:16px;
+  color:var(--text) !important;
+  line-height:1.90;
+  margin-bottom:20px;
+}
+
+.chapter-content strong { color:var(--navy-dark); font-weight:700; }
+.chapter-content em { color:var(--navy); font-style:italic; }
+.chapter-content a { color:var(--navy); font-weight:600; text-decoration:underline; transition:color 0.2s; }
+.chapter-content a:hover { color:var(--teal); }
+
+.chapter-content hr {
+  border:none;
+  border-top:2px solid var(--border);
+  margin:36px 0;
+}
+
+.chapter-content .story-box,
+.chapter-content blockquote {
+  background:linear-gradient(135deg, #eef3ff 0%, #e8f0ff 100%);
+  border-left:4px solid var(--navy);
+  padding:22px 28px; margin:28px 0; border-radius:0 14px 14px 0;
+  box-shadow:0 2px 12px rgba(35,59,143,0.08);
+  font-size:16px; line-height:1.85; color:var(--text);
+}
+.chapter-content blockquote p { margin:0; color:var(--text) !important; }
+
+.chapter-content .tip-box {
+  background:linear-gradient(135deg, #fffbeb 0%, #fff8e1 100%);
+  border-left:4px solid var(--accent);
+  padding:18px 24px; margin:24px 0; border-radius:0 12px 12px 0;
+  font-size:15px; font-weight:500; color:#7a5200;
+  box-shadow:0 2px 10px rgba(245,166,35,0.10);
+}
+
+/* ── CODE BLOCKS FIX ── */
+.chapter-content pre {
+  background:#0f1d4a !important;
+  border-radius:14px;
+  padding:28px 32px;
+  overflow-x:auto;
+  margin:20px 0 28px;
+  border:1px solid rgba(26,184,216,0.22);
+  box-shadow:0 6px 28px rgba(15,29,74,0.22);
+  position:relative;
+  color:#e2e8ff !important;
+  font-family:'Fira Code', monospace !important;
+  font-size:14.5px !important;
+  line-height:1.80 !important;
+  white-space:pre;
+}
+.chapter-content pre::before {
+  content:'C++'; position:absolute; top:12px; right:16px;
+  font-family:'Fira Code',monospace; font-size:11px;
+  color:rgba(255,255,255,0.35); font-weight:600; letter-spacing:1.5px;
+}
+.chapter-content pre code {
+  font-family:'Fira Code', monospace !important;
+  font-size:inherit !important;
+  color:#e2e8ff !important;
+  background:none !important;
+  padding:0 !important;
+  border:none !important;
+  border-radius:0 !important;
+  line-height:inherit !important;
+  display:block;
+  white-space:pre;
+}
+
+/* inline code */
+.chapter-content code {
+  font-family:'Fira Code',monospace;
+  background:rgba(35,59,143,0.08);
+  color:var(--navy);
+  padding:2px 8px; border-radius:5px; font-size:13.5px;
+  border:1px solid rgba(35,59,143,0.12);
+}
+
+/* label lines like "Example:", "Explanation:" */
+.chapter-content .content-label {
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin:20px 0 8px;
+}
+
+/* Lists */
+.chapter-content ul, .chapter-content ol {
+  padding-left:0; margin:18px 0 24px; list-style:none;
+}
+.chapter-content ul li, .chapter-content ol li {
+  position:relative; padding:10px 14px 10px 44px;
+  margin-bottom:10px; font-size:15px; line-height:1.7;
+  color:var(--text);
+  background:#f8faff; border-radius:10px;
+  border:1px solid rgba(35,59,143,0.07);
+  transition:border-color 0.2s, background 0.2s;
+}
+.chapter-content ul li:hover,
+.chapter-content ol li:hover {
+  background:#eef3ff;
+  border-color:rgba(35,59,143,0.18);
+}
+.chapter-content ul li::before {
+  content:'▶'; position:absolute; left:16px; top:13px;
+  color:var(--navy); font-size:9px;
+}
+.chapter-content ol { counter-reset:item; }
+.chapter-content ol li { counter-increment:item; }
+.chapter-content ol li::before {
+  content:counter(item); position:absolute; left:10px; top:50%;
+  transform:translateY(-50%);
+  width:22px; height:22px; background:var(--navy); color:#fff;
+  font-size:11px; font-weight:800; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  line-height:22px; text-align:center;
+}
+
+/* Tables */
+.chapter-content table {
+  width:100%; border-collapse:collapse; margin:28px 0;
+  border-radius:14px; overflow:hidden; box-shadow:var(--card-shadow);
+}
+.chapter-content th {
+  background:var(--navy); color:#fff; padding:14px 18px;
+  font-size:13px; font-weight:700; text-align:left;
+}
+.chapter-content td {
+  padding:12px 18px; font-size:14px; border-bottom:1px solid var(--border);
+  color:var(--text);
+}
+.chapter-content tr:last-child td { border-bottom:none; }
+.chapter-content tr:nth-child(even) td { background:#f8faff; }
+
+/* Images */
+.chapter-content img {
+  max-width:100%; border-radius:14px; margin:24px 0;
+  box-shadow:var(--card-shadow); border:1px solid var(--border);
+}
+
+/* ── BOTTOM NAVIGATION ── */
+.bottom-nav-section {
+  max-width:1000px; margin:0 auto; padding:0 40px 64px;
+}
+.bottom-nav-card {
+  background:var(--white); border-radius:20px;
+  border:1px solid var(--border); padding:32px 40px;
+  box-shadow:var(--card-shadow);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:20px;
+}
+.bottom-nav-info h3 { font-size:17px; font-weight:800; color:var(--navy-dark); margin-bottom:4px; }
+.bottom-nav-info p { font-size:14px; color:var(--muted) !important; }
+.bottom-nav-actions { display:flex; gap:12px; flex-wrap:wrap; }
+
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 28px; border-radius:10px;
+  text-decoration:none; font-size:14px; font-weight:700;
+  transition:all 0.25s; cursor:pointer; border:none; font-family:inherit;
+}
+.btn-secondary {
+  background:var(--accent); color:var(--navy-dark);
+  box-shadow:0 4px 14px rgba(245,166,35,0.30);
+}
+.btn-secondary:hover { background:var(--accent-light); transform:translateY(-2px); }
+.btn-ghost {
+  background:var(--white); color:var(--navy);
+  border:2px solid var(--border);
+}
+.btn-ghost:hover { border-color:var(--navy); background:#edf1ff; transform:translateY(-2px); }
+
+/* ── FOOTER ── */
+footer { background:var(--navy-deeper); border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
+.footer-top {
+  max-width:1200px; margin:auto; padding:60px 40px 44px;
+  display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:44px;
+}
+.footer-brand .f-logo { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.f-logo-icon { width:34px; height:34px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.f-logo span { color:#fff; font-size:17px; font-weight:800; }
+.footer-brand p { font-size:13.5px; color:rgba(255,255,255,0.48) !important; line-height:1.75; max-width:230px; margin-bottom:24px; }
+.social-links { display:flex; gap:10px; }
+.social-btn {
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.10);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.55); text-decoration:none; font-size:14px; transition:all 0.25s;
+}
+.social-btn:hover { background:var(--accent); color:var(--navy-dark); border-color:var(--accent); transform:translateY(-3px); }
+.footer-col h4 { font-size:12px; font-weight:700; color:rgba(255,255,255,0.88); letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+.footer-col ul { list-style:none; padding:0; margin:0; }
+.footer-col ul li { margin-bottom:11px; padding:0; background:none; border:none; }
+.footer-col ul li::before { display:none; }
+.footer-col ul li a, .footer-col ul li span { color:rgba(255,255,255,0.50); text-decoration:none; font-size:14px; transition:color 0.2s; }
+.footer-col ul li a:hover { color:var(--accent); }
+.footer-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); }
+.footer-bottom {
+  max-width:1200px; margin:auto; padding:20px 40px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-bottom p { font-size:13px; color:rgba(255,255,255,0.30) !important; }
+.footer-bottom-links { display:flex; gap:22px; }
+.footer-bottom-links a { font-size:13px; color:rgba(255,255,255,0.30); text-decoration:none; transition:color 0.2s; }
+.footer-bottom-links a:hover { color:var(--accent); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:900px) {
+  .main-content { padding:32px 24px 44px; }
+  .content-card { padding:36px 32px; }
+  .bottom-nav-section { padding:0 24px 44px; }
+  .footer-top { grid-template-columns:1fr 1fr; gap:24px; padding:40px 24px 32px; }
+}
+@media (max-width:600px) {
+  .chapter-hero { padding:36px 20px; }
+  .chapter-hero h1 { font-size:14px; }
+  .chapter-hero-meta { flex-direction:column; align-items:flex-start; gap:10px; }
+  .back-btn { margin-left:0; }
+  .content-card { padding:24px 20px; }
+  .main-content { padding:20px 16px 40px; }
+  .bottom-nav-card { flex-direction:column; align-items:flex-start; padding:24px 20px; }
+  .bottom-nav-section { padding:0 16px 44px; }
+  .footer-top { grid-template-columns:1fr; padding:36px 20px 28px; }
+  .footer-bottom { flex-direction:column; text-align:center; padding:16px 20px; }
+  .navbar { padding:0 20px; }
+  .nav-links a:not(.btn-nav) { display:none; }
+  .chapter-content pre { padding:18px 16px; font-size:13px !important; }
+  .chapter-content h1 { font-size:13px; }
+  .chapter-content h2 { font-size:10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="navbar">
+    <a href="#" class="logo">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'learning:chapter_list' %}">Chapters</a>
+      <a href="{% url 'accounts:dashboard' %}">Back to dashboard</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── CHAPTER HERO ── -->
+<div class="chapter-hero">
+  <div class="chapter-hero-inner">
+    <div class="chapter-breadcrumb">
+      <a href="{% url 'accounts:landing' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'learning:chapter_list' %}">Chapters</a>
+      <span class="sep">›</span>
+      <span class="current">{{ chapter.title }}</span>
+    </div>
+    <h1>🏰 {{ chapter.title }}</h1>
+    <div class="chapter-hero-meta">
+      <span class="hero-badge">📖 Story Chapter</span>
+      <span class="hero-badge">⭐ +50 XP on completion</span>
+      <span class="hero-badge">🧠 Quiz available</span>
+      <a href="{% url 'learning:chapter_list' %}" class="back-btn">← Back to Chapters</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="main-content">
+  <div class="content-card">
+    <div class="chapter-content" id="chapterContent">
+      {{ chapter.content|safe }}
+    </div>
+  </div>
+</div>
+
+<!-- ── BOTTOM NAVIGATION ── -->
+<div class="bottom-nav-section">
+  <div class="bottom-nav-card">
+    <div class="bottom-nav-info">
+      <h3>Ready to test your knowledge?</h3>
+      <p>Complete the quiz to earn XP and unlock the next chapter.</p>
+    </div>
+    <div class="bottom-nav-actions">
+      <a href="{% url 'learning:chapter_list' %}" class="btn btn-ghost">← All Chapters</a>
+      <a href="{% url 'learning:chapter_quiz' chapter.id %}" class="btn btn-secondary">Take Chapter Quiz 🧠</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">
+        <div class="f-logo-icon">📘</div>
+        <span>StoryLearnC++</span>
+      </div>
+      <p>Learn C++ programming through engaging stories, real coding challenges, and AI guidance.</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+        <li><a href="{% url 'learning:chapter_list' %}">Chapters</a></li>
+        <li><a href="#">Chatbot</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+        <li><a href="#">My Progress</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+        <li><span>support@storylearncpp.com</span></li>
+        <li><span>+977 9800000000</span></li>
+        <li><a href="#">Twitter</a> &nbsp;·&nbsp; <a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 StoryLearnC++. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Navbar hide on scroll ── */
+  let lastY = 0;
+  const header = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  }, { passive: true });
+
+  (function fixChapterContent() {
+    const content = document.getElementById('chapterContent');
+    if (!content) return;
+
+    /* Fix 1: wrap bare <pre> text in <code> */
+    content.querySelectorAll('pre').forEach(pre => {
+      if (!pre.querySelector('code')) {
+        const code = document.createElement('code');
+        code.innerHTML = pre.innerHTML;
+        pre.innerHTML = '';
+        pre.appendChild(code);
+      }
+    });
+
+    /* Fix 2: style loose text nodes */
+    const labelPattern = /^(Example|Explanation|Story|Correct|Wrong|Note|Output|Result)\s*:/i;
+    Array.from(content.childNodes).forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent.trim();
+        if (!text) return;
+        const span = document.createElement('span');
+        if (labelPattern.test(text)) {
+          span.className = 'content-label';
+        } else {
+          span.style.cssText = 'display:block;font-size:16px;color:var(--text);line-height:1.9;margin-bottom:16px;';
+        }
+        span.textContent = text;
+        content.replaceChild(span, node);
+      }
+    });
+
+    /* Fix 3: syntax highlighting */
+    content.querySelectorAll('pre code').forEach(block => {
+      let html = block.innerHTML
+        .replace(/\b(int|float|double|char|string|bool|void|return|if|else|for|while|do|include|using|namespace|std|cout|cin|endl|auto|const|long|short|unsigned|signed)\b/g,
+          '<span style="color:#93c5fd;font-weight:600">$1</span>')
+        .replace(/"([^"]*)"/g, '<span style="color:#86efac">"$1"</span>')
+        .replace(/'(.)'/g, '<span style="color:#86efac">\'$1\'</span>')
+        .replace(/\b(\d+\.?\d*)\b/g, '<span style="color:#fbbf24">$1</span>')
+        .replace(/(\/\/[^\n]*)/g, '<span style="color:#64748b;font-style:italic">$1</span>')
+        .replace(/([=+\-*/<>!]{1,2})/g, '<span style="color:#f472b6">$1</span>');
+      block.innerHTML = html;
+    });
+  })();
+</script>
+
+</body>
+</html>

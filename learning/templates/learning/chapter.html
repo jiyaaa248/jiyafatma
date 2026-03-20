@@ -1,0 +1,721 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapters | StoryLearnC++</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #233b8f;
+  --navy-dark: #172869;
+  --navy-deeper: #0f1d4a;
+  --accent: #f5a623;
+  --accent-light: #ffd07a;
+  --teal: #1ab8d8;
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --text: #1e293b;
+  --muted: #5a6a8a;
+  --border: #d8e2f8;
+  --card-shadow: 0 4px 24px rgba(35,59,143,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; display:flex; flex-direction:column; min-height:100vh; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideRight { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes gradientShift {
+  0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+}
+@keyframes pulse-ring {
+  0%{transform:scale(1);opacity:0.7} 100%{transform:scale(1.7);opacity:0}
+}
+@keyframes float {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)}
+}
+@keyframes shimmer {
+  0%{background-position:-400px 0} 100%{background-position:400px 0}
+}
+@keyframes countUp {
+  from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)}
+}
+
+/* ── HEADER ── */
+header {
+  background:var(--navy); box-shadow:0 2px 24px rgba(15,29,74,0.30);
+  position:sticky; top:0; z-index:100; flex-shrink:0;
+  transition:transform 0.3s ease; animation:fadeIn 0.5s ease both;
+}
+.navbar {
+  max-width:1200px; margin:auto; padding:0 40px; height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  color:#fff; font-size:20px; font-weight:800; letter-spacing:-0.3px; text-decoration:none;
+}
+.logo-icon {
+  width:36px; height:36px; background:var(--accent); border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:18px; transition:transform 0.3s;
+}
+.logo:hover .logo-icon { transform:rotate(-8deg) scale(1.1); }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-links a {
+  color:rgba(255,255,255,0.80); text-decoration:none;
+  padding:8px 15px; border-radius:8px; font-size:14px; font-weight:500;
+  transition:all 0.2s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:4px; left:50%; right:50%;
+  height:2px; background:var(--accent); border-radius:2px;
+  transition:left 0.25s,right 0.25s;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,0.09); }
+.nav-links a:hover::after { left:15px; right:15px; }
+.nav-links .btn-nav {
+  background:var(--accent); color:var(--navy-dark); font-weight:700;
+  padding:8px 22px; border-radius:8px; margin-left:6px;
+  box-shadow:0 2px 12px rgba(245,166,35,0.35); transition:all 0.25s;
+}
+.nav-links .btn-nav::after { display:none; }
+.nav-links .btn-nav:hover { background:var(--accent-light); transform:translateY(-2px); }
+
+/* ── HERO INTRO ── */
+.intro-hero {
+  background:linear-gradient(135deg, var(--navy) 0%, #1c318a 50%, var(--navy-deeper) 100%);
+  background-size:200% 200%; animation:gradientShift 8s ease infinite;
+  padding:80px 40px; position:relative; overflow:hidden;
+}
+.intro-hero::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at top right, rgba(26,184,216,0.20) 0%, transparent 55%),
+             radial-gradient(ellipse at bottom left, rgba(245,166,35,0.12) 0%, transparent 55%);
+}
+.intro-hero .particle {
+  position:absolute; border-radius:50%; background:rgba(255,255,255,0.05);
+  animation:float 6s ease-in-out infinite;
+}
+.p1{width:80px;height:80px;top:10%;left:5%;}
+.p2{width:50px;height:50px;top:65%;left:15%;animation-delay:1.5s;}
+.p3{width:110px;height:110px;top:8%;right:8%;animation-delay:0.8s;}
+.p4{width:60px;height:60px;bottom:12%;right:20%;animation-delay:2s;}
+
+.intro-inner {
+  max-width:1200px; margin:auto; position:relative; z-index:1;
+  display:flex; align-items:center; gap:64px;
+}
+.intro-text { flex:1; animation:slideRight 0.7s cubic-bezier(.22,.68,0,1.2) 0.1s both; }
+.intro-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.90);
+  font-size:12px; font-weight:600; padding:6px 14px; border-radius:20px;
+  margin-bottom:22px; border:1px solid rgba(255,255,255,0.20);
+  backdrop-filter:blur(4px);
+}
+.intro-badge .dot {
+  width:7px; height:7px; border-radius:50%; background:var(--teal); position:relative; flex-shrink:0;
+}
+.intro-badge .dot::after {
+  content:''; position:absolute; inset:-3px; border-radius:50%;
+  border:2px solid var(--teal); animation:pulse-ring 1.6s ease-out infinite;
+}
+.intro-text h1 {
+  font-size:46px; font-weight:800; line-height:1.15;
+  color:#fff; letter-spacing:-1.5px; margin-bottom:20px;
+}
+.intro-text h1 em {
+  font-style:normal;
+  background:linear-gradient(135deg, var(--accent) 0%, #ff9500 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.intro-text p { font-size:16px; color:rgba(255,255,255,0.72); line-height:1.75; max-width:500px; margin-bottom:32px; }
+
+.intro-stats { display:flex; gap:28px; flex-wrap:wrap; }
+.istat {
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
+  border-radius:14px; padding:14px 20px; backdrop-filter:blur(4px);
+  animation:countUp 0.6s ease both;
+}
+.istat:nth-child(1){animation-delay:0.5s;}
+.istat:nth-child(2){animation-delay:0.65s;}
+.istat:nth-child(3){animation-delay:0.8s;}
+.istat-num { font-size:22px; font-weight:800; color:#fff; }
+.istat-label { font-size:11px; color:rgba(255,255,255,0.55); margin-top:2px; font-weight:500; }
+
+.intro-visual {
+  flex:0 0 340px;
+  animation:slideUp 0.7s cubic-bezier(.22,.68,0,1.2) 0.2s both;
+}
+.cpp-card {
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px; padding:24px; backdrop-filter:blur(8px);
+}
+.cpp-card-header {
+  display:flex; align-items:center; gap:8px; margin-bottom:16px;
+}
+.dot-r{width:10px;height:10px;border-radius:50%;background:#ff5f57;}
+.dot-y{width:10px;height:10px;border-radius:50%;background:#febc2e;}
+.dot-g{width:10px;height:10px;border-radius:50%;background:#28c840;}
+.cpp-card-title { color:rgba(255,255,255,0.50); font-size:12px; margin-left:4px; font-family:'Fira Code',monospace; }
+.code-block {
+  font-family:'Fira Code',monospace; font-size:13px; line-height:1.7;
+  color:rgba(255,255,255,0.85);
+}
+.code-block .kw { color:#f5a623; }
+.code-block .fn { color:#1ab8d8; }
+.code-block .str { color:#a8ff78; }
+.code-block .cm { color:rgba(255,255,255,0.35); font-style:italic; }
+.code-block .num { color:#ff9500; }
+
+/* ── C++ REAL LIFE SECTION ── */
+.reallife-section { max-width:1200px; margin:0 auto; padding:80px 40px 0; }
+.section-label {
+  display:inline-block; background:rgba(35,59,143,0.08); color:var(--navy);
+  font-size:12px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase;
+  padding:6px 16px; border-radius:20px; margin-bottom:16px;
+  border:1px solid rgba(35,59,143,0.14);
+}
+.section-title { font-size:34px; font-weight:800; color:var(--navy-dark); letter-spacing:-0.8px; margin-bottom:12px; }
+.section-sub { font-size:16px; color:var(--muted); line-height:1.7; max-width:560px; margin-bottom:48px; }
+
+.reallife-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.rl-card {
+  background:var(--white); border-radius:20px; border:1px solid var(--border);
+  padding:28px; box-shadow:var(--card-shadow);
+  transition:all 0.3s cubic-bezier(.22,.68,0,1.2);
+  position:relative; overflow:hidden;
+}
+.rl-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, var(--navy) 0%, var(--teal) 100%);
+  opacity:0; transition:opacity 0.3s;
+}
+.rl-card:hover { transform:translateY(-6px); box-shadow:0 16px 44px rgba(35,59,143,0.15); border-color:rgba(35,59,143,0.20); }
+.rl-card:hover::before { opacity:1; }
+.rl-icon {
+  width:52px; height:52px; border-radius:14px; margin-bottom:18px;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+}
+.rl-icon.blue { background:rgba(35,59,143,0.10); }
+.rl-icon.teal { background:rgba(26,184,216,0.12); }
+.rl-icon.orange { background:rgba(245,166,35,0.14); }
+.rl-icon.green { background:rgba(34,197,94,0.12); }
+.rl-icon.purple { background:rgba(139,92,246,0.12); }
+.rl-icon.red { background:rgba(239,68,68,0.10); }
+.rl-card h3 { font-size:16px; font-weight:700; color:var(--navy-dark); margin-bottom:8px; }
+.rl-card p { font-size:14px; color:var(--muted); line-height:1.65; }
+.rl-tag {
+  display:inline-block; margin-top:14px; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.8px; padding:4px 10px; border-radius:6px;
+}
+.tag-navy { background:rgba(35,59,143,0.08); color:var(--navy); }
+.tag-teal { background:rgba(26,184,216,0.10); color:#0a7c9e; }
+.tag-orange { background:rgba(245,166,35,0.12); color:#a05e00; }
+.tag-green { background:rgba(34,197,94,0.10); color:#166534; }
+.tag-purple { background:rgba(139,92,246,0.12); color:#5b21b6; }
+.tag-red { background:rgba(239,68,68,0.08); color:#b91c1c; }
+
+/* ── WHY LEARN C++ BANNER ── */
+.why-banner {
+  max-width:1200px; margin:64px auto 0; padding:0 40px;
+}
+.why-inner {
+  background:linear-gradient(135deg, var(--navy) 0%, #1c318a 50%, var(--navy-deeper) 100%);
+  border-radius:24px; padding:56px 60px;
+  display:flex; align-items:center; gap:60px;
+  position:relative; overflow:hidden;
+}
+.why-inner::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at right, rgba(26,184,216,0.20) 0%, transparent 60%);
+}
+.why-text { flex:1; position:relative; z-index:1; }
+.why-text h2 { font-size:30px; font-weight:800; color:#fff; margin-bottom:16px; letter-spacing:-0.5px; }
+.why-text p { font-size:15px; color:rgba(255,255,255,0.70); line-height:1.75; }
+.why-points { flex:1; position:relative; z-index:1; display:flex; flex-direction:column; gap:14px; }
+.why-point {
+  display:flex; align-items:flex-start; gap:12px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px; padding:14px 16px; backdrop-filter:blur(4px);
+}
+.why-check {
+  width:24px; height:24px; border-radius:7px; background:var(--accent);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  font-size:12px; font-weight:800; color:var(--navy-dark); margin-top:1px;
+}
+.why-point-text { font-size:14px; color:rgba(255,255,255,0.85); font-weight:500; line-height:1.5; }
+
+/* ── CHAPTERS SECTION ── */
+.chapters-section { max-width:1200px; margin:0 auto; padding:80px 40px 60px; flex:1; }
+.chapters-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:40px; flex-wrap:wrap; gap:16px;
+}
+.chapters-header-left h2 { font-size:32px; font-weight:800; color:var(--navy-dark); letter-spacing:-0.5px; }
+.chapters-header-left p { font-size:15px; color:var(--muted); margin-top:6px; }
+.chapters-filter { display:flex; gap:8px; }
+.filter-btn {
+  padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600;
+  border:1.5px solid var(--border); background:var(--white); color:var(--muted);
+  cursor:pointer; transition:all 0.2s; font-family:inherit;
+}
+.filter-btn.active, .filter-btn:hover { background:var(--navy); color:#fff; border-color:var(--navy); }
+
+/* Divider */
+.chapter-divider {
+  display:flex; align-items:center; gap:16px; margin-bottom:32px;
+}
+.chapter-divider::before, .chapter-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.chapter-divider span {
+  font-size:13px; font-weight:700; color:var(--navy);
+  background:var(--white); padding:6px 16px; border-radius:20px;
+  border:1px solid var(--border); white-space:nowrap;
+}
+
+.chapters-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+
+/* Chapter card */
+.chapter-card {
+  background:var(--white); border-radius:20px;
+  border:1px solid var(--border); overflow:hidden;
+  box-shadow:var(--card-shadow); position:relative;
+  text-decoration:none; color:inherit; display:block;
+  transition:all 0.35s cubic-bezier(.22,.68,0,1.2);
+}
+.chapter-card:hover { transform:translateY(-7px) scale(1.01); box-shadow:0 20px 52px rgba(35,59,143,0.15); border-color:rgba(35,59,143,0.22); }
+
+.chapter-img-wrap { height:160px; overflow:hidden; position:relative; }
+.chapter-img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s ease; }
+.chapter-card:hover .chapter-img-wrap img { transform:scale(1.06); }
+.chapter-img-wrap::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, transparent 50%, rgba(35,59,143,0.15) 100%);
+}
+
+/* shimmer on hover */
+.chapter-img-wrap::before {
+  content:''; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.30) 50%,transparent 100%);
+  background-size:400px 100%; opacity:0; transition:opacity 0.3s;
+}
+.chapter-card:hover .chapter-img-wrap::before { opacity:1; animation:shimmer 0.8s linear; }
+
+.chapter-order-badge {
+  position:absolute; top:12px; left:12px; z-index:2;
+  width:30px; height:30px; border-radius:9px;
+  background:var(--navy); color:#fff;
+  font-size:13px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 8px rgba(35,59,143,0.35);
+}
+
+.chapter-body { padding:20px; }
+.chapter-body h4 { font-size:15px; font-weight:700; color:var(--navy-dark); margin-bottom:8px; line-height:1.4; }
+.chapter-meta { display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+.chapter-status {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:12px; font-weight:600; padding:4px 10px; border-radius:6px;
+}
+.status-done { background:rgba(34,197,94,0.12); color:#166534; }
+.status-available { background:rgba(35,59,143,0.09); color:var(--navy); }
+.chapter-arrow {
+  width:30px; height:30px; border-radius:8px;
+  background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; transition:all 0.25s;
+}
+.chapter-card:hover .chapter-arrow { background:var(--accent); color:var(--navy-dark); transform:translateX(3px); }
+
+/* Locked card */
+.chapter-card.locked {
+  cursor:not-allowed; filter:grayscale(60%);
+}
+.chapter-card.locked:hover { transform:none; box-shadow:var(--card-shadow); border-color:var(--border); }
+.locked-overlay {
+  position:absolute; inset:0; background:rgba(240,244,255,0.75);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  backdrop-filter:blur(2px); z-index:5;
+}
+.locked-overlay .lock-icon { font-size:28px; }
+.locked-overlay .lock-text { font-size:14px; font-weight:700; color:var(--navy-dark); }
+.locked-overlay .lock-hint { font-size:12px; color:var(--muted); }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity:0; transform:translateY(28px);
+  transition:opacity 0.60s ease, transform 0.60s cubic-bezier(.22,.68,0,1.2);
+}
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-d1{transition-delay:0.08s;}
+.reveal-d2{transition-delay:0.16s;}
+.reveal-d3{transition-delay:0.24s;}
+.reveal-d4{transition-delay:0.32s;}
+.reveal-d5{transition-delay:0.40s;}
+.reveal-d6{transition-delay:0.48s;}
+
+/* ── FOOTER ── */
+footer { background:var(--navy-deeper); border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
+.footer-top {
+  max-width:1200px; margin:auto;
+  padding:60px 40px 44px;
+  display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:44px;
+}
+.footer-brand .f-logo { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.f-logo-icon { width:34px; height:34px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.f-logo span { color:#fff; font-size:17px; font-weight:800; }
+.footer-brand p { font-size:13.5px; color:rgba(255,255,255,0.48); line-height:1.75; max-width:230px; margin-bottom:24px; }
+.social-links { display:flex; gap:10px; }
+.social-btn {
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.10);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.55); text-decoration:none; font-size:14px; transition:all 0.25s;
+}
+.social-btn:hover { background:var(--accent); color:var(--navy-dark); border-color:var(--accent); transform:translateY(-3px); }
+.footer-col h4 { font-size:12px; font-weight:700; color:rgba(255,255,255,0.88); letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+.footer-col ul { list-style:none; }
+.footer-col ul li { margin-bottom:11px; }
+.footer-col ul li a, .footer-col ul li span { color:rgba(255,255,255,0.50); text-decoration:none; font-size:14px; transition:color 0.2s; }
+.footer-col ul li a:hover { color:var(--accent); }
+.footer-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); }
+.footer-bottom {
+  max-width:1200px; margin:auto; padding:20px 40px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-bottom p { font-size:13px; color:rgba(255,255,255,0.30); }
+.footer-bottom-links { display:flex; gap:22px; }
+.footer-bottom-links a { font-size:13px; color:rgba(255,255,255,0.30); text-decoration:none; transition:color 0.2s; }
+.footer-bottom-links a:hover { color:var(--accent); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:1024px) {
+  .footer-top { grid-template-columns:1fr 1fr; }
+  .reallife-grid { grid-template-columns:1fr 1fr; }
+  .chapters-grid { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:900px) {
+  .intro-inner { flex-direction:column; gap:40px; }
+  .intro-visual { flex:unset; width:100%; }
+  .intro-text h1 { font-size:34px; }
+  .why-inner { flex-direction:column; padding:40px 28px; }
+  .chapters-header { flex-direction:column; align-items:flex-start; }
+}
+@media (max-width:700px) {
+  .reallife-grid { grid-template-columns:1fr; }
+  .chapters-grid { grid-template-columns:1fr; }
+  .intro-hero { padding:50px 24px; }
+  .reallife-section, .chapters-section { padding-left:24px; padding-right:24px; }
+  .why-banner { padding:0 24px; }
+  .footer-top { grid-template-columns:1fr; padding:40px 24px 32px; }
+  .footer-bottom { flex-direction:column; text-align:center; padding:18px 24px; }
+  .navbar { padding:0 20px; }
+  .nav-links a:not(.btn-nav) { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="navbar">
+    <a href="#" class="logo">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+    <div class="nav-links">
+      {% comment %} <a href="{% url 'accounts:landing' %}">Home</a> {% endcomment %}
+      {% comment %} <a href="#">Chapters</a> {% endcomment %}
+      {% comment %} <a href="#">Chatbot</a> {% endcomment %}
+      {% comment %} <a href="{% url 'accounts:login' %}">Login</a> {% endcomment %}
+      <a href="{% url 'accounts:dashboard' %}">Back to dashboard</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     HERO INTRO — What is C++?
+══════════════════════════════════════════ -->
+<section class="intro-hero">
+  <div class="particle p1"></div>
+  <div class="particle p2"></div>
+  <div class="particle p3"></div>
+  <div class="particle p4"></div>
+
+  <div class="intro-inner">
+    <div class="intro-text">
+      <div class="intro-badge">
+        <div class="dot"></div>
+        The Language That Powers the World
+      </div>
+      <h1>What is <em>C++</em> and<br>Why Does It Matter?</h1>
+      <p>C++ is one of the most powerful, fast, and widely-used programming languages ever created. From the games you play to the rockets that reach space — C++ is running underneath it all.</p>
+      <div class="intro-stats">
+        <div class="istat">
+          <div class="istat-num">40+</div>
+          <div class="istat-label">Years Active</div>
+        </div>
+        <div class="istat">
+          <div class="istat-num">#3</div>
+          <div class="istat-label">Global Ranking</div>
+        </div>
+        <div class="istat">
+          <div class="istat-num">∞</div>
+          <div class="istat-label">Career Doors</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live code card -->
+    <div class="intro-visual">
+      <div class="cpp-card">
+        <div class="cpp-card-header">
+          <div class="dot-r"></div>
+          <div class="dot-y"></div>
+          <div class="dot-g"></div>
+          <span class="cpp-card-title">hello_world.cpp</span>
+        </div>
+        <div class="code-block">
+          <span class="cm">// Your first C++ program</span><br>
+          <span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span><br>
+          <span class="kw">using namespace</span> std;<br><br>
+          <span class="fn">int</span> main() {<br>
+          &nbsp;&nbsp;cout <span class="kw">&lt;&lt;</span> <span class="str">"Hello, World!"</span>;<br>
+          &nbsp;&nbsp;<span class="kw">return</span> <span class="num">0</span>;<br>
+          }<br><br>
+          <span class="cm">// Output: Hello, World!</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     C++ IN REAL LIFE
+══════════════════════════════════════════ -->
+<section class="reallife-section">
+  <div class="reveal">
+    <div class="section-label">Real-World Impact</div>
+    <h2 class="section-title">C++ Is Everywhere Around You</h2>
+    <p class="section-sub">You might not see it, but C++ quietly powers some of the most critical and exciting technologies in our world today.</p>
+  </div>
+
+  <div class="reallife-grid">
+    <div class="rl-card reveal reveal-d1">
+      <div class="rl-icon blue">🎮</div>
+      <h3>Game Development</h3>
+      <p>Epic's Unreal Engine is written in C++. AAA titles like Fortnite, PUBG, and GTA use C++ to deliver real-time 3D graphics and physics at 60+ FPS.</p>
+      <span class="rl-tag tag-navy">Unreal Engine · Unity</span>
+    </div>
+    <div class="rl-card reveal reveal-d2">
+      <div class="rl-icon teal">🌐</div>
+      <h3>Web Browsers</h3>
+      <p>Google Chrome, Mozilla Firefox, and Microsoft Edge are all built with C++. It makes browsers fast enough to render millions of web pages instantly.</p>
+      <span class="rl-tag tag-teal">Chrome · Firefox · Edge</span>
+    </div>
+    <div class="rl-card reveal reveal-d3">
+      <div class="rl-icon orange">🚀</div>
+      <h3>Space & Aerospace</h3>
+      <p>NASA and SpaceX use C++ in flight control systems. The software guiding rockets, satellites, and rovers runs on C++ for its speed and precision.</p>
+      <span class="rl-tag tag-orange">NASA · SpaceX · ESA</span>
+    </div>
+    <div class="rl-card reveal reveal-d4">
+      <div class="rl-icon green">🏦</div>
+      <h3>Finance & Trading</h3>
+      <p>High-frequency trading systems execute millions of stock trades per second. C++ is chosen for its microsecond-level performance in financial markets.</p>
+      <span class="rl-tag tag-green">Bloomberg · Reuters</span>
+    </div>
+    <div class="rl-card reveal reveal-d5">
+      <div class="rl-icon purple">🤖</div>
+      <h3>AI & Robotics</h3>
+      <p>TensorFlow and PyTorch have C++ backends. Industrial robots, self-driving cars, and drones use C++ for real-time sensor processing and control.</p>
+      <span class="rl-tag tag-purple">TensorFlow · ROS</span>
+    </div>
+    <div class="rl-card reveal reveal-d6">
+      <div class="rl-icon red">💻</div>
+      <h3>Operating Systems</h3>
+      <p>Windows OS, parts of Linux, and macOS are written in C and C++. Device drivers, system kernels, and embedded systems all rely heavily on C++.</p>
+      <span class="rl-tag tag-red">Windows · Linux · macOS</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WHY LEARN C++
+══════════════════════════════════════════ -->
+<div class="why-banner">
+  <div class="why-inner reveal">
+    <div class="why-text">
+      <h2>Why Learn C++ with StoryLearnC++?</h2>
+      <p>Most tutorials throw syntax at you without context. We teach C++ through stories — so you understand the "why" before you write a single line of code.</p>
+    </div>
+    <div class="why-points">
+      <div class="why-point">
+        <div class="why-check">✓</div>
+        <div class="why-point-text">Story-driven chapters that make concepts stick naturally</div>
+      </div>
+      <div class="why-point">
+        <div class="why-check">✓</div>
+        <div class="why-point-text">Hands-on coding tasks with instant AI feedback</div>
+      </div>
+      <div class="why-point">
+        <div class="why-check">✓</div>
+        <div class="why-point-text">Earn XP and badges as you progress through missions</div>
+      </div>
+      <div class="why-point">
+        <div class="why-check">✓</div>
+        <div class="why-point-text">Unlock chapters sequentially — build real understanding</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CHOOSE YOUR CHAPTER
+══════════════════════════════════════════ -->
+<section class="chapters-section">
+  <div class="chapters-header reveal">
+    <div class="chapters-header-left">
+      <div class="section-label">Learning Path</div>
+      <h2>Choose Your Chapter</h2>
+      <p>Start from the beginning or resume where you left off. Complete each chapter to unlock the next.</p>
+    </div>
+  </div>
+
+  <div class="chapter-divider">
+    <span>📚 Your Story Chapters</span>
+  </div>
+
+  <div class="chapters-grid">
+    {% for item in chapters %}
+      {% if item.is_unlocked %}
+        <a href="{% url 'learning:chapter_detail' item.chapter.id %}" class="chapter-card reveal">
+          <div class="chapter-img-wrap">
+            {% if item.chapter.image %}
+              <img src="{{ item.chapter.image.url }}" alt="{{ item.chapter.title }}">
+            {% else %}
+              <img src="https://via.placeholder.com/400x160/233b8f/ffffff?text=Chapter+{{ item.chapter.order }}" alt="{{ item.chapter.title }}">
+            {% endif %}
+            <div class="chapter-order-badge">{{ item.chapter.order }}</div>
+          </div>
+          <div class="chapter-body">
+            <h4>{{ item.chapter.title }}</h4>
+            <div class="chapter-meta">
+              {% if item.is_completed %}
+                <span class="chapter-status status-done">✅ Completed</span>
+              {% else %}
+                <span class="chapter-status status-available">▶ Start</span>
+              {% endif %}
+              <div class="chapter-arrow">→</div>
+            </div>
+          </div>
+        </a>
+      {% else %}
+        <div class="chapter-card locked reveal">
+          <div class="locked-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-text">Chapter Locked</div>
+            <div class="lock-hint">Complete previous chapter to unlock</div>
+          </div>
+          <div class="chapter-img-wrap">
+            {% if item.chapter.image %}
+              <img src="{{ item.chapter.image.url }}" alt="{{ item.chapter.title }}">
+            {% else %}
+              <img src="https://via.placeholder.com/400x160/233b8f/ffffff?text=Chapter+{{ item.chapter.order }}" alt="{{ item.chapter.title }}">
+            {% endif %}
+            <div class="chapter-order-badge">{{ item.chapter.order }}</div>
+          </div>
+          <div class="chapter-body">
+            <h4>{{ item.chapter.title }}</h4>
+            <div class="chapter-meta">
+              <span class="chapter-status" style="background:rgba(100,116,139,0.10);color:var(--muted);">🔒 Locked</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <p style="color:var(--muted);font-size:15px;">No chapters available yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">
+        <div class="f-logo-icon">📘</div>
+        <span>StoryLearnC++</span>
+      </div>
+      <p>Learn C++ programming through engaging stories, real coding challenges, and AI guidance. Start your journey today.</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+        <li><a href="#">Chapters</a></li>
+        <li><a href="#">Chatbot</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+        <li><a href="#">My Progress</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+        <li><span>support@storylearncpp.com</span></li>
+        <li><span>+977 9800000000</span></li>
+        <li><a href="#">Twitter</a> &nbsp;·&nbsp; <a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 StoryLearnC++. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Scroll Reveal */
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.10 });
+  revealEls.forEach(el => observer.observe(el));
+
+  /* Navbar hide on scroll down */
+  let lastY = 0;
+  const header = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  });
+</script>
+</body>
+</html>

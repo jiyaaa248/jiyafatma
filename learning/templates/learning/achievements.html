@@ -1,0 +1,793 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Achievements | StoryLearnC++</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #233b8f;
+            --blue-light: #eef1fb;
+            --blue-mid: #c5cef2;
+            --blue-dark: #172760;
+            --blue-accent: #3d5afe;
+            --gold: #f5a623;
+            --gold-light: #fff8ed;
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --red: #dc2626;
+            --bg: #f0f2fa;
+            --surface: #ffffff;
+            --surface2: #f7f8fd;
+            --border: #dde2f4;
+            --text: #111827;
+            --text2: #374151;
+            --muted: #6b7280;
+            --shadow-sm: 0 2px 8px rgba(35,59,143,0.07);
+            --shadow-md: 0 8px 30px rgba(35,59,143,0.1);
+            --shadow-lg: 0 20px 50px rgba(35,59,143,0.14);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Subtle dot grid bg */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(35,59,143,0.09) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Top blue accent line */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue), var(--blue-accent), var(--gold));
+            z-index: 9999;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            position: relative;
+            z-index: 100;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: 1px;
+        }
+        .logo span { color: var(--gold); }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--blue);
+            padding: 9px 18px;
+            border: 2px solid var(--blue);
+            border-radius: 6px;
+            background: var(--blue-light);
+            transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .back-btn:hover {
+            background: var(--blue);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(35,59,143,0.3);
+            transform: translateY(-1px);
+        }
+        .back-btn svg { transition: transform 0.22s; }
+        .back-btn:hover svg { transform: translateX(-3px); }
+
+        /* ── MAIN ── */
+        .main {
+            position: relative;
+            z-index: 10;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 40px 28px 80px;
+        }
+
+        /* ── PAGE TITLE ── */
+        .page-title-wrap {
+            margin-bottom: 36px;
+            animation: fadeUp 0.5s ease both;
+        }
+        .page-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            color: var(--blue);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .page-title span { color: var(--gold); }
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── PROFILE CARD ── */
+        .profile-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 24px;
+            animation: fadeUp 0.5s 0.1s ease both;
+        }
+
+        .profile-hero {
+            background: linear-gradient(145deg, var(--blue) 0%, var(--blue-dark) 100%);
+            padding: 32px 24px 28px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .profile-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; left: -30px;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .avatar-ring {
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: conic-gradient(var(--gold), #fff, var(--gold-light), var(--gold));
+            animation: spin 5s linear infinite;
+        }
+
+        .avatar-mask {
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: var(--blue);
+            z-index: 1;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .profile-img {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+            display: block;
+        }
+
+        .profile-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .profile-level {
+            display: inline-block;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 7px;
+            color: var(--gold);
+            background: rgba(245,166,35,0.15);
+            border: 1px solid rgba(245,166,35,0.3);
+            border-radius: 20px;
+            padding: 5px 12px;
+            letter-spacing: 1px;
+        }
+
+        .profile-body { padding: 24px; }
+
+        .xp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .xp-label-txt {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .xp-val {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 13px;
+            color: var(--blue);
+        }
+
+        .xp-track {
+            height: 10px;
+            background: var(--blue-light);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--blue-mid);
+        }
+        .xp-fill {
+            height: 100%;
+            width: {{ xp_percent|default:62 }}%;
+            background: linear-gradient(90deg, var(--blue), var(--blue-accent));
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(35,59,143,0.35);
+            transform-origin: left;
+            animation: barGrow 1s 0.6s cubic-bezier(0.34,1.2,0.64,1) both;
+        }
+        @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+        .xp-next {
+            text-align: right;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .divider { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .stat-box:hover {
+            border-color: var(--blue);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--blue);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        .stat-key {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rank-box {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--gold-light) 0%, #fff7e0 100%);
+            border: 1px solid rgba(245,166,35,0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+        }
+        .rank-icon { font-size: 30px; }
+        .rank-label { font-size: 10px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+        .rank-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 900;
+            color: #92570a;
+        }
+
+        /* COMPLETION BAR */
+        .completion-box {
+            margin-top: 14px;
+            background: var(--blue-light);
+            border: 1px solid var(--blue-mid);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .completion-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--blue);
+            margin-bottom: 8px;
+        }
+        .completion-track {
+            height: 6px;
+            background: var(--blue-mid);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .completion-fill {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 3px;
+            width: 45%;
+            animation: barGrow 1s 0.8s cubic-bezier(0.34,1.2,0.64,1) both;
+        }
+
+        /* ── BADGES PANEL ── */
+        .badges-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            animation: fadeUp 0.5s 0.15s ease both;
+        }
+
+        .panel-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            background: var(--surface2);
+        }
+
+        .section-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px; height: 16px;
+            background: linear-gradient(to bottom, var(--blue), var(--blue-accent));
+            border-radius: 2px;
+        }
+
+        .filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .filter-tab {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 7px 16px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-tab.active {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(35,59,143,0.25);
+        }
+        .filter-tab:hover:not(.active) {
+            border-color: var(--blue);
+            color: var(--blue);
+            background: var(--blue-light);
+        }
+
+        .badge-count-tag {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+        .badge-count-tag strong { color: var(--blue); }
+
+        .badges-body { padding: 28px; }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+            gap: 16px;
+        }
+
+        /* BADGE CARD */
+        .badge-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 24px 16px 18px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            animation: fadeUp 0.5s ease both;
+            overflow: hidden;
+        }
+
+        /* sheen on hover */
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 60%;
+            height: 200%;
+            background: linear-gradient(115deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: rotate(25deg);
+            transition: none;
+        }
+        .badge-card:hover::before {
+            transition: all 0.5s ease;
+            top: -20%; left: 130%;
+        }
+
+        .badge-card:not(.locked):hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: var(--blue);
+            box-shadow: var(--shadow-lg), 0 0 0 3px rgba(35,59,143,0.08);
+        }
+
+        /* top color bar */
+        .badge-card:not(.locked)::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue), var(--blue-accent));
+            border-radius: 14px 14px 0 0;
+        }
+
+        .badge-card.locked {
+            opacity: 0.5;
+            filter: grayscale(0.8);
+            background: var(--surface2);
+            cursor: not-allowed;
+        }
+        .badge-card.locked:hover { transform: none; box-shadow: none; }
+
+        .badge-icon-wrap {
+            width: 68px; height: 68px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            position: relative;
+            border-radius: 50%;
+            background: var(--blue-light);
+        }
+
+        .badge-card:not(.locked) .badge-icon-wrap {
+            background: linear-gradient(135deg, var(--blue-light), #d6dcf8);
+            box-shadow: 0 4px 14px rgba(35,59,143,0.15);
+        }
+
+        .badge-card:not(.locked) .badge-icon-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px dashed var(--blue-mid);
+            animation: rotateSlow 8s linear infinite;
+        }
+        @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+        .badge-name {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 7.5px;
+            line-height: 1.7;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .badge-status.unlocked {
+            background: var(--green-light);
+            color: var(--green);
+        }
+        .badge-status.locked-txt {
+            background: var(--surface2);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            font-size: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+        }
+
+        /* NEW pill */
+        .new-pill {
+            position: absolute;
+            top: 14px; right: 12px;
+            background: var(--red);
+            color: #fff;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 5px;
+            padding: 3px 7px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            animation: blink 1.8s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        /* EMPTY STATE */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 70px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .empty-icon {
+            width: 80px; height: 80px;
+            background: var(--blue-light);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px;
+            border: 2px dashed var(--blue-mid);
+        }
+        .empty-state p {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+            color: var(--muted);
+            line-height: 2.2;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 920px) {
+            .layout { grid-template-columns: 1fr; }
+            .profile-card { position: static; }
+            .header { padding: 0 20px; }
+            .main { padding: 24px 16px 60px; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--blue-mid); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+    </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+{% comment %} <header class="header">
+    <div class="logo">STORY<span>LEARN</span> C++</div>
+    <a href="{% url 'accounts:dashboard' %}" class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Dashboard
+    </a>
+</header> {% endcomment %}
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+    <div class="page-title-wrap">
+        <h1 class="page-title">MY <span>ACHIEVEMENTS</span></h1>
+        <p class="page-subtitle">Track your badges, XP, and progress through every chapter.</p>
+    </div>
+
+    <div class="layout">
+
+        <!-- LEFT: PROFILE -->
+        <aside>
+            <div class="profile-card">
+                <div class="profile-hero">
+                    <div class="avatar-wrap">
+                        <div class="avatar-ring"></div>
+                        <div class="avatar-mask"></div>
+                        {% if user_profile.profile_picture %}
+                            <img src="{{ user_profile.profile_picture.url }}" class="profile-img" alt="Avatar">
+                        {% else %}
+                            <img src="https://via.placeholder.com/88" class="profile-img" alt="Avatar">
+                        {% endif %}
+                    </div>
+                    <div class="profile-name">{{ request.user.username }}</div>
+                    <div class="profile-level">⚡ LVL {{ user_profile.level }} EXPLORER</div>
+                </div>
+
+                <div class="profile-body">
+                    <div class="xp-row">
+                        <span class="xp-label-txt">Experience</span>
+                        <span class="xp-val">{{ user_profile.xp }} XP</span>
+                    </div>
+                    <div class="xp-track">
+                        <div class="xp-fill"></div>
+                    </div>
+                    <div class="xp-next">Next level at 1200 XP</div>
+
+                    <hr class="divider">
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-val">{{ unlocked_count }}</div>
+                            <div class="stat-key">Unlocked</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-val">{{ total_badges }}</div>
+                            <div class="stat-key">Total</div>
+                        </div>
+                    </div>
+
+                    {% comment %} <div class="rank-box">
+                        <div class="rank-icon">🏆</div>
+                        <div>
+                            <div class="rank-label">Current Rank</div>
+                            <div class="rank-name">CODE WARRIOR</div>
+                        </div>
+                    </div> {% endcomment %}
+
+                    <div class="completion-box">
+                        <div class="completion-top">
+                            <span>🎯 Completion</span>
+                            <span>{{ unlocked_count }}/{{ total_badges }}</span>
+                        </div>
+                        <div class="completion-track">
+                            <div class="completion-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT: BADGES -->
+        <section class="badges-panel">
+            <div class="panel-header">
+                <div class="section-title">ALL BADGES</div>
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                    <span class="badge-count-tag"><strong id="visibleCount">{{ total_badges }}</strong> badges</span>
+                    <div class="filter-row">
+                        <button class="filter-tab active" data-filter="all">All</button>
+                        <button class="filter-tab" data-filter="unlocked">Unlocked</button>
+                        <button class="filter-tab" data-filter="locked">Locked</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="badges-body">
+                <div class="badge-grid" id="badgeGrid">
+                    {% for badge in badges %}
+                        <div class="badge-card {% if not badge.is_unlocked %}locked{% endif %}"
+                             data-state="{% if badge.is_unlocked %}unlocked{% else %}locked{% endif %}"
+                             style="animation-delay: {{ forloop.counter0 }}00ms;">
+
+                            {% if badge.is_unlocked and forloop.counter == 1 %}
+                                <div class="new-pill">NEW</div>
+                            {% endif %}
+
+                            <div class="badge-icon-wrap">
+                                {% if badge.is_unlocked %}{{ badge.icon_emoji }}{% else %}🔒{% endif %}
+                            </div>
+
+                            <div class="badge-name">{{ badge.name }}</div>
+
+                            {% if badge.is_unlocked %}
+                                <span class="badge-status unlocked">✓ {{ badge.date_earned|date:"M d, Y" }}</span>
+                            {% else %}
+                                <span class="badge-status locked-txt">{{ badge.required_chapter }}</span>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="empty-state">
+                            <div class="empty-icon">🎮</div>
+                            <p>START YOUR FIRST<br>CHAPTER TO<br>EARN BADGES!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+</main>
+
+<script>
+    // Filter tabs
+    const tabs = document.querySelectorAll('.filter-tab');
+    const cards = document.querySelectorAll('.badge-card');
+    const countEl = document.getElementById('visibleCount');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const filter = tab.dataset.filter;
+            let visible = 0;
+            cards.forEach(card => {
+                const state = card.dataset.state;
+                const show = filter === 'all' || state === filter;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            countEl.textContent = visible;
+        });
+    });
+
+    // Stagger animation delays
+    cards.forEach((card, i) => {
+        card.style.animationDelay = `${0.15 + i * 0.055}s`;
+    });
+
+    // Dynamic completion fill
+    const total = {{ total_badges|default:10 }};
+    const unlocked = {{ unlocked_count|default:4 }};
+    const pct = total > 0 ? (unlocked / total * 100).toFixed(1) : 0;
+    const fill = document.querySelector('.completion-fill');
+    if (fill) fill.style.width = pct + '%';
+</script>
+
+</body>
+</html>

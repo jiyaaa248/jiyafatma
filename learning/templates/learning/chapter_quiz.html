@@ -1,0 +1,560 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ quiz.title }} | StoryLearnC++</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #233b8f;
+  --navy-dark: #172869;
+  --navy-deeper: #0f1d4a;
+  --accent: #f5a623;
+  --accent-light: #ffd07a;
+  --teal: #1ab8d8;
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --text: #1e293b;
+  --muted: #5a6a8a;
+  --border: #d8e2f8;
+  --card-shadow: 0 4px 24px rgba(35,59,143,0.10);
+  --green: #22c55e;
+  --red: #ef4444;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from{opacity:0}to{opacity:1} }
+@keyframes slideDown { from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
+@keyframes gradientShift {
+  0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+}
+@keyframes pulse-ring {
+  0%{transform:scale(1);opacity:0.7} 100%{transform:scale(1.7);opacity:0}
+}
+@keyframes questionIn {
+  from{opacity:0;transform:translateX(-16px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* ── HEADER ── */
+header {
+  background:var(--navy);
+  box-shadow:0 2px 24px rgba(15,29,74,0.30);
+  position:sticky; top:0; z-index:100; flex-shrink:0;
+  transition:transform 0.3s ease; animation:fadeIn 0.5s ease both;
+}
+.navbar {
+  max-width:1200px; margin:auto; padding:0 40px; height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  color:#fff; font-size:20px; font-weight:800; letter-spacing:-0.3px; text-decoration:none;
+}
+.logo-icon {
+  width:36px; height:36px; background:var(--accent); border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:18px; transition:transform 0.3s;
+}
+.logo:hover .logo-icon { transform:rotate(-8deg) scale(1.1); }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-links a {
+  color:rgba(255,255,255,0.80); text-decoration:none;
+  padding:8px 15px; border-radius:8px; font-size:14px; font-weight:500;
+  transition:all 0.2s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:4px; left:50%; right:50%;
+  height:2px; background:var(--accent); border-radius:2px;
+  transition:left 0.25s,right 0.25s;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,0.09); }
+.nav-links a:hover::after { left:15px; right:15px; }
+.nav-links .btn-nav {
+  background:var(--accent); color:var(--navy-dark); font-weight:700;
+  padding:8px 22px; border-radius:8px; margin-left:6px;
+  box-shadow:0 2px 12px rgba(245,166,35,0.35); transition:all 0.25s;
+}
+.nav-links .btn-nav::after { display:none; }
+.nav-links .btn-nav:hover { background:var(--accent-light); transform:translateY(-2px); }
+
+/* ── QUIZ HERO ── */
+.quiz-hero {
+  background:linear-gradient(135deg, var(--navy) 0%, #1c318a 50%, var(--navy-deeper) 100%);
+  background-size:200% 200%; animation:gradientShift 8s ease infinite;
+  padding:52px 40px; position:relative; overflow:hidden;
+}
+.quiz-hero::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at top right, rgba(26,184,216,0.18) 0%, transparent 55%),
+             radial-gradient(ellipse at bottom left, rgba(245,166,35,0.10) 0%, transparent 55%);
+}
+.quiz-hero-inner {
+  max-width:860px; margin:auto; position:relative; z-index:1;
+  animation:slideDown 0.6s cubic-bezier(.22,.68,0,1.2) both;
+}
+.breadcrumb {
+  display:flex; align-items:center; gap:8px; margin-bottom:20px;
+}
+.breadcrumb a { color:rgba(255,255,255,0.60); text-decoration:none; font-size:13px; font-weight:500; transition:color 0.2s; }
+.breadcrumb a:hover { color:var(--accent); }
+.breadcrumb .sep { color:rgba(255,255,255,0.30); font-size:13px; }
+.breadcrumb .current { color:rgba(255,255,255,0.90); font-size:13px; font-weight:600; }
+.quiz-hero h1 { font-size:28px; font-weight:800; color:#fff; margin-bottom:18px; letter-spacing:-0.5px; }
+.quiz-hero h1 span { color:var(--accent); }
+.quiz-hero-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.85);
+  font-size:12px; font-weight:600; padding:5px 12px; border-radius:16px;
+  border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px);
+}
+.hero-badge .dot {
+  width:6px; height:6px; border-radius:50%; background:var(--teal); position:relative;
+}
+.hero-badge .dot::after {
+  content:''; position:absolute; inset:-2px; border-radius:50%;
+  border:1.5px solid var(--teal); animation:pulse-ring 1.6s ease-out infinite;
+}
+
+/* ── MAIN CONTENT ── */
+main {
+  flex:1; max-width:860px; margin:0 auto; width:100%;
+  padding:40px 40px 60px;
+}
+
+/* ── PROGRESS BAR ── */
+.quiz-progress-wrap { margin-bottom:32px; animation:slideUp 0.5s ease both; }
+.quiz-progress-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px;
+}
+.quiz-progress-header span { font-size:13px; font-weight:600; color:var(--muted); }
+.quiz-progress-header .prog-count { color:var(--navy); font-weight:800; }
+.quiz-progress-bar {
+  height:8px; background:var(--border); border-radius:10px; overflow:hidden;
+}
+.quiz-progress-fill {
+  height:100%; border-radius:10px;
+  background:linear-gradient(90deg, var(--navy) 0%, var(--teal) 100%);
+  transition:width 0.4s ease; width:0%;
+}
+
+/* ── QUESTION CARDS ── */
+.question-card {
+  background:var(--white); border-radius:20px;
+  border:1px solid var(--border); padding:32px 36px;
+  margin-bottom:20px; box-shadow:var(--card-shadow);
+  animation:questionIn 0.5s ease both;
+  transition:border-color 0.3s, box-shadow 0.3s;
+}
+.question-card:hover { border-color:rgba(35,59,143,0.20); box-shadow:0 8px 32px rgba(35,59,143,0.12); }
+
+/* stagger */
+.question-card:nth-child(1){animation-delay:0.05s;}
+.question-card:nth-child(2){animation-delay:0.10s;}
+.question-card:nth-child(3){animation-delay:0.15s;}
+.question-card:nth-child(4){animation-delay:0.20s;}
+.question-card:nth-child(5){animation-delay:0.25s;}
+.question-card:nth-child(6){animation-delay:0.30s;}
+.question-card:nth-child(7){animation-delay:0.35s;}
+.question-card:nth-child(8){animation-delay:0.40s;}
+
+.q-header { display:flex; align-items:flex-start; gap:14px; margin-bottom:22px; }
+.q-number {
+  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--navy) 0%, #3558c0 100%);
+  color:#fff; font-size:14px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 12px rgba(35,59,143,0.28);
+}
+.q-text { font-size:16px; font-weight:700; color:var(--navy-dark); line-height:1.6; padding-top:4px; }
+
+/* ── OPTIONS ── */
+.options { display:flex; flex-direction:column; gap:10px; }
+.option-label {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 18px; border-radius:12px;
+  border:1.5px solid var(--border);
+  background:var(--bg); cursor:pointer;
+  transition:all 0.22s;
+  position:relative; overflow:hidden;
+}
+.option-label::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(35,59,143,0.05) 0%, transparent 100%);
+  opacity:0; transition:opacity 0.22s;
+}
+.option-label:hover {
+  border-color:var(--navy); background:var(--white);
+  transform:translateX(4px); box-shadow:0 4px 16px rgba(35,59,143,0.10);
+}
+.option-label:hover::before { opacity:1; }
+
+/* hide default radio */
+.option-label input[type="radio"] { display:none; }
+
+/* custom radio circle */
+.radio-custom {
+  width:20px; height:20px; border-radius:50%; flex-shrink:0;
+  border:2px solid var(--border); background:var(--white);
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.22s; position:relative; z-index:1;
+}
+.radio-custom::after {
+  content:''; width:9px; height:9px; border-radius:50%;
+  background:var(--navy); opacity:0; transform:scale(0); transition:all 0.22s;
+}
+
+.option-label input[type="radio"]:checked ~ .radio-custom {
+  border-color:var(--navy); background:rgba(35,59,143,0.08);
+}
+.option-label input[type="radio"]:checked ~ .radio-custom::after {
+  opacity:1; transform:scale(1);
+}
+.option-label:has(input:checked) {
+  border-color:var(--navy); background:rgba(35,59,143,0.05);
+  box-shadow:0 4px 16px rgba(35,59,143,0.12); transform:translateX(4px);
+}
+
+.option-text { font-size:15px; font-weight:500; color:var(--text); position:relative; z-index:1; }
+.option-letter {
+  width:26px; height:26px; border-radius:7px; flex-shrink:0;
+  background:rgba(35,59,143,0.08); color:var(--navy);
+  font-size:12px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; z-index:1; transition:all 0.22s;
+}
+.option-label:has(input:checked) .option-letter {
+  background:var(--navy); color:#fff;
+}
+
+/* ── SUBMIT AREA ── */
+.submit-area {
+  background:var(--white); border-radius:20px;
+  border:1px solid var(--border); padding:28px 36px;
+  box-shadow:var(--card-shadow);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:20px;
+  animation:slideUp 0.5s ease 0.3s both;
+}
+.submit-info h3 { font-size:16px; font-weight:800; color:var(--navy-dark); margin-bottom:4px; }
+.submit-info p { font-size:14px; color:var(--muted); }
+.submit-actions { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+
+.answered-count {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(35,59,143,0.08); color:var(--navy);
+  padding:8px 16px; border-radius:20px;
+  font-size:13px; font-weight:700; border:1px solid rgba(35,59,143,0.14);
+}
+
+.btn-submit {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:13px 32px; border-radius:10px;
+  background:linear-gradient(135deg, var(--navy) 0%, #2a4db5 100%);
+  color:#fff; border:none; font-size:15px; font-weight:700;
+  font-family:inherit; cursor:pointer;
+  box-shadow:0 4px 18px rgba(35,59,143,0.30);
+  transition:all 0.25s;
+}
+.btn-submit:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(35,59,143,0.38);
+  background:linear-gradient(135deg, var(--navy-dark) 0%, #3557c5 100%);
+}
+.btn-back {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:13px 22px; border-radius:10px;
+  background:var(--white); color:var(--navy);
+  border:2px solid var(--border); font-size:14px; font-weight:700;
+  font-family:inherit; cursor:pointer; text-decoration:none;
+  transition:all 0.25s;
+}
+.btn-back:hover { border-color:var(--navy); background:#edf1ff; transform:translateY(-2px); }
+
+/* ── FOOTER ── */
+footer { background:var(--navy-deeper); border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
+.footer-top {
+  max-width:1200px; margin:auto; padding:60px 40px 44px;
+  display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:44px;
+}
+.footer-brand .f-logo { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.f-logo-icon { width:34px; height:34px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.f-logo span { color:#fff; font-size:17px; font-weight:800; }
+.footer-brand p { font-size:13.5px; color:rgba(255,255,255,0.48); line-height:1.75; max-width:230px; margin-bottom:24px; }
+.social-links { display:flex; gap:10px; }
+.social-btn {
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.10);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.55); text-decoration:none; font-size:14px; transition:all 0.25s;
+}
+.social-btn:hover { background:var(--accent); color:var(--navy-dark); border-color:var(--accent); transform:translateY(-3px); }
+.footer-col h4 { font-size:12px; font-weight:700; color:rgba(255,255,255,0.88); letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+.footer-col ul { list-style:none; }
+.footer-col ul li { margin-bottom:11px; }
+.footer-col ul li a, .footer-col ul li span { color:rgba(255,255,255,0.50); text-decoration:none; font-size:14px; transition:color 0.2s; }
+.footer-col ul li a:hover { color:var(--accent); }
+.footer-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); }
+.footer-bottom {
+  max-width:1200px; margin:auto; padding:20px 40px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-bottom p { font-size:13px; color:rgba(255,255,255,0.30); }
+.footer-bottom-links { display:flex; gap:22px; }
+.footer-bottom-links a { font-size:13px; color:rgba(255,255,255,0.30); text-decoration:none; transition:color 0.2s; }
+.footer-bottom-links a:hover { color:var(--accent); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:700px) {
+  .quiz-hero { padding:36px 20px; }
+  .quiz-hero h1 { font-size:20px; }
+  main { padding:24px 20px 44px; }
+  .question-card { padding:22px 20px; }
+  .submit-area { flex-direction:column; align-items:flex-start; padding:22px 20px; }
+  .footer-top { grid-template-columns:1fr 1fr; gap:24px; padding:40px 24px 32px; }
+  .footer-bottom { flex-direction:column; text-align:center; padding:16px 20px; }
+  .navbar { padding:0 20px; }
+  .nav-links a:not(.btn-nav) { display:none; }
+}
+@media (max-width:480px) {
+  .footer-top { grid-template-columns:1fr; }
+  .q-text { font-size:14px; }
+  .option-text { font-size:14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+{% comment %} <header>
+  <div class="navbar">
+    <a href="{% url 'accounts:landing' %}" class="logo">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'accounts:landing' %}">Home</a>
+      <a href="{% url 'learning:chapter_list' %}">Chapters</a>
+      <a href="#">Chatbot</a>
+      <a href="{% url 'accounts:login' %}">Login</a>
+      <a href="{% url 'accounts:signup' %}" class="btn-nav">Get Started</a>
+    </div>
+  </div>
+</header> {% endcomment %}
+
+<!-- ── QUIZ HERO ── -->
+<div class="quiz-hero">
+  <div class="quiz-hero-inner">
+    <div class="breadcrumb">
+      <a href="{% url 'accounts:dashboard' %}">Back to dashboard</a>
+      <span class="sep">›</span>
+      <a href="{% url 'learning:chapter_list' %}">Chapters</a>
+      <span class="sep">›</span>
+      <span class="current">{{ quiz.title }}</span>
+    </div>
+    <h1>🧠 <span>{{ quiz.title }}</span></h1>
+    <div class="quiz-hero-meta">
+      <span class="hero-badge"><div class="dot"></div> Quiz Active</span>
+      <span class="hero-badge">📝 {{ questions|length }} Questions</span>
+      <span class="hero-badge">⭐ +50 XP on pass</span>
+      <span class="hero-badge">⏱ Take your time</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- Progress bar -->
+  <div class="quiz-progress-wrap">
+    <div class="quiz-progress-header">
+      <span>Quiz Progress</span>
+      <span class="prog-count" id="progText">0 / {{ questions|length }} answered</span>
+    </div>
+    <div class="quiz-progress-bar">
+      <div class="quiz-progress-fill" id="progBar"></div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form method="post" action="{% url 'learning:submit_quiz' quiz.id %}" id="quizForm">
+    {% csrf_token %}
+
+    {% for question in questions %}
+    <div class="question-card" id="qcard-{{ question.id }}">
+      <div class="q-header">
+        <div class="q-number">{{ forloop.counter }}</div>
+        <div class="q-text">{{ question.question_text }}</div>
+      </div>
+      <div class="options">
+
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="1" required>
+          <div class="radio-custom"></div>
+          <span class="option-letter">A</span>
+          <span class="option-text">{{ question.option1 }}</span>
+        </label>
+
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="2">
+          <div class="radio-custom"></div>
+          <span class="option-letter">B</span>
+          <span class="option-text">{{ question.option2 }}</span>
+        </label>
+
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="3">
+          <div class="radio-custom"></div>
+          <span class="option-letter">C</span>
+          <span class="option-text">{{ question.option3 }}</span>
+        </label>
+
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="4">
+          <div class="radio-custom"></div>
+          <span class="option-letter">D</span>
+          <span class="option-text">{{ question.option4 }}</span>
+        </label>
+
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Submit area -->
+    <div class="submit-area">
+      <div class="submit-info">
+        <h3>Ready to submit?</h3>
+        <p>Make sure you've answered all questions before submitting.</p>
+      </div>
+      <div class="submit-actions">
+        <a href="{% url 'learning:chapter_list' %}" class="btn-back">← Back to Chapters</a>
+        <span class="answered-count" id="answeredBadge">✅ 0 / {{ questions|length }} answered</span>
+        <button type="submit" class="btn-submit">Submit Quiz 🚀</button>
+      </div>
+    </div>
+
+  </form>
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">
+        <div class="f-logo-icon">📘</div>
+        <span>StoryLearnC++</span>
+      </div>
+      <p>Learn C++ programming through engaging stories, real coding challenges, and AI guidance.</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+        <li><a href="{% url 'learning:chapter_list' %}">Chapters</a></li>
+        <li><a href="#">Chatbot</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+        <li><a href="#">My Progress</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+        <li><span>support@storylearncpp.com</span></li>
+        <li><span>+977 9800000000</span></li>
+        <li><a href="#">Twitter</a> &nbsp;·&nbsp; <a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 StoryLearnC++. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Navbar hide on scroll */
+  let lastY = 0;
+  const header = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  });
+
+  /* Live answered counter + progress bar */
+  const total = {{ questions|length }};
+  const progBar = document.getElementById('progBar');
+  const progText = document.getElementById('progText');
+  const answeredBadge = document.getElementById('answeredBadge');
+
+  function updateProgress() {
+    const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+    // group by question name to count unique answered questions
+    const names = new Set();
+    document.querySelectorAll('input[type="radio"]:checked').forEach(r => names.add(r.name));
+    const count = names.size;
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    progBar.style.width = pct + '%';
+    progText.textContent = count + ' / ' + total + ' answered';
+    answeredBadge.textContent = '✅ ' + count + ' / ' + total + ' answered';
+  }
+
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', updateProgress);
+  });
+
+  /* Prevent submit if not all answered */
+  document.getElementById('quizForm').addEventListener('submit', function(e) {
+    const names = new Set();
+    document.querySelectorAll('input[type="radio"]:checked').forEach(r => names.add(r.name));
+    if (names.size < total) {
+      e.preventDefault();
+      const first = document.querySelector('input[type="radio"]:not(:checked)');
+      if (first) {
+        const card = first.closest('.question-card');
+        card.style.borderColor = '#ef4444';
+        card.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)';
+        card.scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => {
+          card.style.borderColor = '';
+          card.style.boxShadow = '';
+        }, 2500);
+      }
+      alert('Please answer all ' + total + ' questions before submitting!');
+    }
+  });
+</script>
+
+</body>
+</html>
