@@ -1,0 +1,692 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoryLearnC++ — Learn C++ Through Stories</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #233b8f;
+  --navy-dark: #172869;
+  --navy-deeper: #0f1d4a;
+  --accent: #f5a623;
+  --accent-light: #ffd07a;
+  --teal: #1ab8d8;
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --text: #1e293b;
+  --muted: #5a6a8a;
+  --border: #d8e2f8;
+  --card-shadow: 0 4px 28px rgba(35,59,143,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity:0; } to { opacity:1; }
+}
+@keyframes slideRight {
+  from { opacity:0; transform:translateX(-28px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes slideLeft {
+  from { opacity:0; transform:translateX(28px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes float {
+  0%,100% { transform:translateY(0px); }
+  50%     { transform:translateY(-10px); }
+}
+@keyframes pulse-ring {
+  0%   { transform:scale(1);   opacity:0.7; }
+  100% { transform:scale(1.7); opacity:0; }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes countUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes borderGlow {
+  0%,100% { box-shadow:0 4px 18px rgba(245,166,35,0.40); }
+  50%     { box-shadow:0 4px 30px rgba(245,166,35,0.70); }
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top:0; z-index:100;
+  background: var(--navy);
+  box-shadow: 0 2px 24px rgba(15,29,74,0.30);
+  animation: fadeIn 0.5s ease both;
+  transition: transform 0.3s ease;
+}
+.navbar {
+  max-width:1200px; margin:auto;
+  padding:0 40px; height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  color:#fff; font-size:20px; font-weight:800; letter-spacing:-0.3px;
+  text-decoration:none;
+}
+.logo-icon {
+  width:36px; height:36px;
+  background: var(--accent);
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  transition: transform 0.3s;
+}
+.logo:hover .logo-icon { transform: rotate(-8deg) scale(1.1); }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-links a {
+  color:rgba(255,255,255,0.80); text-decoration:none;
+  padding:8px 15px; border-radius:8px;
+  font-size:14px; font-weight:500;
+  transition: all 0.2s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:4px; left:50%; right:50%;
+  height:2px; background:var(--accent); border-radius:2px;
+  transition: left 0.25s, right 0.25s;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,0.09); }
+.nav-links a:hover::after { left:15px; right:15px; }
+.nav-links .btn-nav {
+  background:var(--accent); color:var(--navy-dark); font-weight:700;
+  padding:8px 22px; border-radius:8px; margin-left:6px;
+  box-shadow:0 2px 12px rgba(245,166,35,0.35);
+  transition: all 0.25s;
+}
+.nav-links .btn-nav::after { display:none; }
+.nav-links .btn-nav:hover { background:var(--accent-light); transform:translateY(-2px); box-shadow:0 6px 18px rgba(245,166,35,0.45); }
+
+/* ── HERO ── */
+.hero {
+  max-width:1200px; margin:0 auto;
+  padding:90px 40px 70px;
+  display:flex; align-items:center; gap:64px;
+  position:relative;
+}
+.hero::before {
+  content:''; position:absolute;
+  width:480px; height:480px; border-radius:50%;
+  background: radial-gradient(circle, rgba(35,59,143,0.07) 0%, transparent 70%);
+  top:-80px; left:-120px; pointer-events:none;
+}
+.hero-text {
+  flex:1;
+  animation: slideRight 0.7s cubic-bezier(.22,.68,0,1.2) 0.1s both;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background: rgba(35,59,143,0.08);
+  color: var(--navy); font-size:13px; font-weight:600;
+  padding:6px 14px; border-radius:20px; margin-bottom:26px;
+  border:1px solid rgba(35,59,143,0.18);
+}
+.hero-badge .dot {
+  width:7px; height:7px; border-radius:50%;
+  background: var(--teal); position:relative; flex-shrink:0;
+}
+.hero-badge .dot::after {
+  content:''; position:absolute; inset:-3px; border-radius:50%;
+  border:2px solid var(--teal);
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+.hero-text h1 {
+  font-size:50px; font-weight:800; line-height:1.13;
+  color:var(--navy-dark); letter-spacing:-1.5px; margin-bottom:22px;
+}
+.hero-text h1 .highlight {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+  background-size:200% 200%;
+  animation: gradientShift 4s ease infinite;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-text h1 .accent-word { color:var(--accent); -webkit-text-fill-color:var(--accent); }
+.hero-text p {
+  font-size:17px; color:var(--muted); line-height:1.75;
+  max-width:460px; margin-bottom:38px;
+}
+.hero-actions { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.btn-primary {
+  background:var(--navy); color:#fff; text-decoration:none;
+  padding:14px 32px; border-radius:10px;
+  font-size:15px; font-weight:700;
+  transition:all 0.25s;
+  box-shadow:0 4px 20px rgba(35,59,143,0.35);
+  display:inline-flex; align-items:center; gap:8px;
+  position:relative; overflow:hidden;
+}
+.btn-primary::before {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.10) 100%);
+  opacity:0; transition:opacity 0.25s;
+}
+.btn-primary:hover { background:var(--navy-dark); transform:translateY(-3px); box-shadow:0 10px 30px rgba(35,59,143,0.40); }
+.btn-primary:hover::before { opacity:1; }
+.arrow { display:inline-block; transition:transform 0.25s; }
+.btn-primary:hover .arrow { transform:translateX(4px); }
+.btn-secondary {
+  color:var(--navy); text-decoration:none;
+  padding:14px 24px; border-radius:10px;
+  font-size:15px; font-weight:600;
+  border:2px solid var(--border);
+  transition:all 0.25s; background:var(--white);
+  display:inline-flex; align-items:center; gap:8px;
+}
+.btn-secondary:hover { border-color:var(--navy); background:#edf1ff; transform:translateY(-2px); }
+.hero-stats {
+  display:flex; gap:32px; margin-top:44px; flex-wrap:wrap; align-items:center;
+}
+.stat { display:flex; flex-direction:column; }
+.stat-num {
+  font-size:26px; font-weight:800; color:var(--navy-dark);
+  animation: countUp 0.6s ease both;
+}
+.stat:nth-child(1) .stat-num { animation-delay:0.6s; }
+.stat:nth-child(3) .stat-num { animation-delay:0.75s; }
+.stat:nth-child(5) .stat-num { animation-delay:0.9s; }
+.stat-label { font-size:12px; color:var(--muted); font-weight:500; margin-top:3px; }
+.stat-divider { width:1px; height:36px; background:var(--border); }
+
+/* ── HERO VISUAL ── */
+.hero-visual {
+  flex:1; display:flex; justify-content:center; align-items:center;
+  position:relative;
+  animation: slideLeft 0.7s cubic-bezier(.22,.68,0,1.2) 0.2s both;
+}
+.hero-img-wrap {
+  background: linear-gradient(145deg, #dce8ff 0%, #c8daff 100%);
+  border-radius:28px; padding:32px;
+  border:1px solid rgba(35,59,143,0.12);
+  box-shadow: var(--card-shadow);
+  position:relative;
+}
+.hero-img-wrap img { max-width:100%; height:270px; object-fit:contain; display:block; }
+.hero-ring {
+  position:absolute; inset:-18px; border-radius:44px;
+  border:2px dashed rgba(35,59,143,0.13);
+  pointer-events:none;
+}
+.float-badge {
+  position:absolute;
+  background:var(--white); border-radius:14px;
+  padding:10px 16px;
+  box-shadow:0 8px 28px rgba(35,59,143,0.16);
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:600; color:var(--text);
+  border:1px solid var(--border); white-space:nowrap;
+}
+.float-badge.b1 { top:-18px; right:-28px; }
+.float-badge.b2 { bottom:-18px; left:-28px; }
+.float-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.badge-meta { font-size:11px; color:var(--muted); font-weight:400; margin-top:1px; }
+
+/* ── SECTION ── */
+.section { max-width:1200px; margin:0 auto; padding:90px 40px; }
+.section-header { text-align:center; margin-bottom:60px; }
+.section-label {
+  display:inline-block;
+  background:rgba(35,59,143,0.08); color:var(--navy);
+  font-size:12px; font-weight:700; letter-spacing:1.4px;
+  text-transform:uppercase; padding:6px 16px; border-radius:20px;
+  margin-bottom:16px; border:1px solid rgba(35,59,143,0.14);
+}
+.section-header h2 { font-size:38px; font-weight:800; color:var(--navy-dark); letter-spacing:-0.8px; margin-bottom:14px; }
+.section-header p { font-size:16px; color:var(--muted); max-width:500px; margin:auto; line-height:1.7; }
+
+/* ── FEATURES ── */
+.features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+.feature-card {
+  background:var(--white); border-radius:22px;
+  border:1px solid var(--border); overflow:hidden;
+  transition:all 0.35s cubic-bezier(.22,.68,0,1.2);
+  box-shadow:var(--card-shadow); position:relative;
+}
+.feature-card:hover { transform:translateY(-8px) scale(1.01); box-shadow:0 20px 56px rgba(35,59,143,0.16); border-color:rgba(35,59,143,0.22); }
+.feature-img {
+  height:190px; display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.feature-img.c1 { background:linear-gradient(135deg, #dce8ff 0%, #b8ceff 100%); }
+.feature-img.c2 { background:linear-gradient(135deg, #d0f0fb 0%, #a3e0f5 100%); }
+.feature-img.c3 { background:linear-gradient(135deg, #fff0d0 0%, #ffd98a 100%); }
+.feature-img::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
+  background-size:400px 100%; opacity:0; transition:opacity 0.3s;
+}
+.feature-card:hover .feature-img::after { opacity:1; animation:shimmer 0.9s linear; }
+.feature-img img {
+  max-width:100%; max-height:148px; object-fit:contain;
+  transition:transform 0.4s cubic-bezier(.22,.68,0,1.2); position:relative; z-index:1;
+}
+.feature-card:hover .feature-img img { transform:scale(1.08) translateY(-4px); }
+.feature-body { padding:26px; }
+.feature-tag {
+  display:inline-block; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  padding:4px 10px; border-radius:6px; margin-bottom:12px;
+}
+.tag-blue   { background:rgba(35,59,143,0.10); color:var(--navy); }
+.tag-teal   { background:rgba(26,184,216,0.12); color:#0e8aad; }
+.tag-orange { background:rgba(245,166,35,0.14); color:#b06b00; }
+.feature-body h3 { font-size:18px; font-weight:700; color:var(--navy-dark); margin-bottom:10px; }
+.feature-body p  { font-size:14px; color:var(--muted); line-height:1.65; }
+
+/* ── HOW IT WORKS ── */
+.steps-wrap {
+  background:var(--white); border-radius:26px;
+  padding:56px 60px; border:1px solid var(--border);
+  box-shadow:var(--card-shadow); position:relative; overflow:hidden;
+}
+.steps-wrap::before {
+  content:''; position:absolute;
+  width:300px; height:300px; border-radius:50%;
+  background:radial-gradient(circle, rgba(35,59,143,0.05) 0%, transparent 70%);
+  top:-100px; right:-60px; pointer-events:none;
+}
+.steps-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; position:relative; }
+.steps-grid::before {
+  content:''; position:absolute;
+  top:23px; left:calc(12.5% + 10px); right:calc(12.5% + 10px);
+  height:2px;
+  background:linear-gradient(90deg, var(--navy) 0%, var(--teal) 100%);
+  opacity:0.18;
+}
+.step { text-align:center; }
+.step-num {
+  width:48px; height:48px; border-radius:14px;
+  background:linear-gradient(135deg, var(--navy) 0%, #3558c0 100%);
+  color:#fff; font-size:20px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 18px;
+  box-shadow:0 6px 20px rgba(35,59,143,0.28);
+  transition:transform 0.3s, box-shadow 0.3s;
+  position:relative; z-index:1;
+}
+.step:hover .step-num { transform:translateY(-4px) scale(1.08); box-shadow:0 12px 28px rgba(35,59,143,0.35); }
+.step h4 { font-size:15px; font-weight:700; color:var(--navy-dark); margin-bottom:8px; }
+.step p  { font-size:13px; color:var(--muted); line-height:1.6; }
+
+/* ── CTA BANNER ── */
+.cta-section { padding:0 40px 90px; max-width:1200px; margin:auto; }
+.cta-banner {
+  background:linear-gradient(135deg, var(--navy) 0%, #1c318a 45%, var(--navy-deeper) 100%);
+  background-size:200% 200%;
+  animation:gradientShift 6s ease infinite;
+  border-radius:28px; padding:68px 60px;
+  text-align:center; position:relative; overflow:hidden;
+}
+.cta-banner::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(26,184,216,0.22) 0%, transparent 55%),
+              radial-gradient(ellipse at bottom left, rgba(245,166,35,0.14) 0%, transparent 55%);
+  pointer-events:none;
+}
+.cta-banner .particle {
+  position:absolute; border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  animation:float 6s ease-in-out infinite;
+}
+.p1 { width:80px; height:80px; top:15%; left:8%; }
+.p2 { width:48px; height:48px; top:60%; left:20%; animation-delay:1.5s; }
+.p3 { width:120px; height:120px; top:10%; right:10%; animation-delay:0.8s; }
+.p4 { width:60px; height:60px; bottom:15%; right:22%; animation-delay:2.2s; }
+.cta-banner > *:not(.particle) { position:relative; z-index:1; }
+.cta-banner h2 { font-size:38px; font-weight:800; color:#fff; margin-bottom:16px; letter-spacing:-0.8px; }
+.cta-banner p { font-size:16px; color:rgba(255,255,255,0.72); margin-bottom:38px; max-width:500px; margin-left:auto; margin-right:auto; line-height:1.7; }
+.cta-actions { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
+.btn-cta {
+  background:var(--accent); color:var(--navy-dark);
+  text-decoration:none; padding:15px 38px;
+  border-radius:10px; font-size:15px; font-weight:700;
+  transition:all 0.25s;
+  animation:borderGlow 2.5s ease infinite;
+}
+.btn-cta:hover { background:var(--accent-light); transform:translateY(-3px); }
+.btn-cta-ghost {
+  background:rgba(255,255,255,0.10); color:#fff;
+  border:1.5px solid rgba(255,255,255,0.28);
+  text-decoration:none; padding:15px 34px;
+  border-radius:10px; font-size:15px; font-weight:600;
+  transition:all 0.25s; backdrop-filter:blur(6px);
+}
+.btn-cta-ghost:hover { background:rgba(255,255,255,0.18); transform:translateY(-3px); }
+
+/* ── FOOTER ── */
+footer { background:var(--navy-deeper); border-top:1px solid rgba(255,255,255,0.07); }
+.footer-top {
+  max-width:1200px; margin:auto;
+  padding:64px 40px 44px;
+  display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:44px;
+}
+.footer-brand .f-logo { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.f-logo-icon { width:34px; height:34px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.f-logo span { color:#fff; font-size:17px; font-weight:800; }
+.footer-brand p { font-size:13.5px; color:rgba(255,255,255,0.48); line-height:1.75; max-width:230px; margin-bottom:24px; }
+.social-links { display:flex; gap:10px; }
+.social-btn {
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.10);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.55); text-decoration:none; font-size:14px;
+  transition:all 0.25s;
+}
+.social-btn:hover { background:var(--accent); color:var(--navy-dark); border-color:var(--accent); transform:translateY(-3px); }
+.footer-col h4 { font-size:12px; font-weight:700; color:rgba(255,255,255,0.88); letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+.footer-col ul { list-style:none; }
+.footer-col ul li { margin-bottom:11px; }
+.footer-col ul li a, .footer-col ul li span { color:rgba(255,255,255,0.50); text-decoration:none; font-size:14px; transition:color 0.2s; }
+.footer-col ul li a:hover { color:var(--accent); }
+.footer-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); }
+.footer-bottom {
+  max-width:1200px; margin:auto; padding:20px 40px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-bottom p { font-size:13px; color:rgba(255,255,255,0.30); }
+.footer-bottom-links { display:flex; gap:22px; }
+.footer-bottom-links a { font-size:13px; color:rgba(255,255,255,0.30); text-decoration:none; transition:color 0.2s; }
+.footer-bottom-links a:hover { color:var(--accent); }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity:0; transform:translateY(30px);
+  transition:opacity 0.65s ease, transform 0.65s cubic-bezier(.22,.68,0,1.2);
+}
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-delay-1 { transition-delay:0.10s; }
+.reveal-delay-2 { transition-delay:0.20s; }
+.reveal-delay-3 { transition-delay:0.30s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width:1024px) {
+  .footer-top { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:900px) {
+  .hero { flex-direction:column; text-align:center; padding:56px 24px 44px; gap:44px; }
+  .hero-text p { max-width:100%; margin:0 auto 36px; }
+  .hero-stats { justify-content:center; }
+  .hero-actions { justify-content:center; }
+  .features-grid { grid-template-columns:1fr; }
+  .steps-grid { grid-template-columns:1fr 1fr; }
+  .steps-grid::before { display:none; }
+  .cta-banner { padding:44px 28px; }
+  .cta-banner h2 { font-size:28px; }
+  .cta-section { padding:0 24px 60px; }
+  .section { padding:60px 24px; }
+  .float-badge { display:none; }
+  .footer-top { gap:30px; padding:44px 24px 36px; }
+  .footer-bottom { flex-direction:column; text-align:center; padding:18px 24px; }
+}
+@media (max-width:600px) {
+  .hero-text h1 { font-size:34px; }
+  .steps-grid { grid-template-columns:1fr; }
+  .footer-top { grid-template-columns:1fr; }
+  .navbar { padding:0 20px; }
+  .nav-links a:not(.btn-nav) { display:none; }
+  .steps-wrap { padding:36px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="navbar">
+    <a href="{% url 'accounts:landing' %}" class="logo">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'accounts:landing' %}">Home</a>
+      {% comment %} <a href="#">Chapters</a> {% endcomment %}
+      {% comment %} <a href="#">Chatbot</a> {% endcomment %}
+      <a href="{% url 'accounts:login' %}">Login</a>
+      <a href="{% url 'accounts:signup' %}" class="btn-nav">Get Started</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">
+      <div class="dot"></div>
+      New &nbsp;·&nbsp; Interactive C++ Learning Platform
+    </div>
+    <h1>
+      Learn C++<br>
+      Through <span class="highlight">Interactive</span><br>
+      <span class="accent-word">Stories</span>
+    </h1>
+    <p>Master programming concepts through immersive narratives, real coding challenges, and AI-powered guidance — at your own pace.</p>
+    <div class="hero-actions">
+      <a href="{% url 'accounts:signup' %}" class="btn-primary">
+        Start Learning Free <span class="arrow">→</span>
+      </a>
+      <a href="#features" class="btn-secondary">
+        ▶ &nbsp;Explore Chapters
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">6+</span>
+        <span class="stat-label">Story Chapters</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">3+</span>
+        <span class="stat-label">Coding Tasks</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">Game</span>
+        <span class="stat-label">based learning</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-img-wrap">
+      <div class="hero-ring"></div>
+      <img src="{% static 'accounts/images/homee.png' %}" alt="Hero Image">
+      <div class="float-badge b1">
+        <div class="float-icon" style="background:#dce8ff">⭐</div>
+        <div>
+          <div>+250 XP Earned</div>
+          <div class="badge-meta">Chapter Complete!</div>
+        </div>
+      </div>
+      <div class="float-badge b2">
+        <div class="float-icon" style="background:#d0f0fb">✅</div>
+        <div>
+          <div>Pointers Mastered</div>
+          <div class="badge-meta">New badge unlocked</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="section" id="features">
+  <div class="section-header reveal">
+    <div class="section-label">Features</div>
+    <h2>Everything You Need to Master C++</h2>
+    <p>A complete learning experience built for beginners and intermediate programmers alike.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal reveal-delay-1">
+      <div class="feature-img c1">
+        <img src="{% static 'accounts/images/homecontent1.png' %}" alt="Story Lessons">
+      </div>
+      <div class="feature-body">
+        <span class="feature-tag tag-blue">Storytelling</span>
+        <h3>Story-Based Lessons</h3>
+        <p>Learn C++ through rich, character-driven narratives. Understand the "why" before the "how" — the way real learning feels.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <div class="feature-img c2" style="padding:20px;">
+        <img src="{% static 'accounts/images/gamifiedlearning.png' %}" alt="Gamified Learning" style="max-height:150px;object-fit:contain;">
+      </div>
+      <div class="feature-body">
+        <span class="feature-tag tag-teal">Gamification</span>
+        <h3>Gamified Learning</h3>
+        <p>Earn XP, unlock chapters, climb leaderboards, and collect badges as you level up your C++ skills through interactive gameplay.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal reveal-delay-3">
+      <div class="feature-img c3">
+        <img src="{% static 'accounts/images/coding.png' %}" alt="Coding Tasks">
+      </div>
+      <div class="feature-body">
+        <span class="feature-tag tag-orange">Hands-On</span>
+        <h3>Interactive Coding Tasks</h3>
+        <p>Apply what you've learned with in-browser coding challenges, instant feedback, and AI-powered hints.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="section" style="padding-top:0">
+  <div class="section-header reveal">
+    <div class="section-label">How It Works</div>
+    <h2>Your Learning Journey</h2>
+    <p>Four simple steps to go from complete beginner to confident C++ programmer.</p>
+  </div>
+  <div class="steps-wrap reveal">
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Create Account</h4>
+        <p>Sign up for free and set up your learner profile in seconds.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Pick a Chapter</h4>
+        <p>Choose a story chapter that matches your current skill level.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Learn & Code</h4>
+        <p>Read the story, understand concepts, then complete coding tasks.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Earn & Level Up</h4>
+        <p>Collect XP, unlock badges, and track your progress over time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<div class="cta-section">
+  <div class="cta-banner reveal">
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <h2>Ready to Start Your C++ Adventure?</h2>
+    <p>Join hundreds of learners mastering C++ through stories and code. It's completely free to get started.</p>
+    <div class="cta-actions">
+      <a href="{% url 'accounts:signup' %}" class="btn-cta">Create Free Account</a>
+      <a href="{% url 'accounts:login' %}" class="btn-cta-ghost">I Already Have an Account</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">
+        <div class="f-logo-icon">📘</div>
+        <span>StoryLearnC++</span>
+      </div>
+      <p>Learn C++ programming through engaging stories, real coding challenges, and AI guidance. Start your journey today.</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+        <li><a href="#">Chapters</a></li>
+        <li><a href="#">Chatbot</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+        <li><a href="#">My Progress</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+        <li><span>support@storylearncpp.com</span></li>
+        <li><span>+977 9800000000</span></li>
+        <li><a href="#">Twitter</a> &nbsp;·&nbsp; <a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 StoryLearnC++. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Scroll Reveal */
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  /* Navbar hide on scroll down */
+  let lastY = 0;
+  const header = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y > lastY && y > 80) { header.style.transform = 'translateY(-100%)'; }
+    else { header.style.transform = 'translateY(0)'; }
+    lastY = y;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us - StoryLearnC++</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ================= GLOBAL ================= */
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", sans-serif; }
+body { background:#f4f7fc; color:#1f2937; }
+a { text-decoration:none; }
+
+/* ================= HEADER ================= */
+header { background:#233b8f; padding:16px 40px; }
+.navbar { max-width:1200px; margin:auto; display:flex; align-items:center; justify-content:space-between; }
+.logo { color:#fff; font-size:22px; font-weight:700; }
+.nav-links a { color:#fff; margin-left:30px; font-size:15px; transition:0.3s; }
+.nav-links a:hover { color:#fbbf24; }
+
+/* ================= CONTACT SECTION ================= */
+.contact-section { max-width:500px; margin:60px auto; padding:20px; }
+.contact-section h1 { color:#233b8f; margin-bottom:25px; font-size:28px; text-align:center; }
+
+/* Contact Form Box */
+.contact-form-container {
+    background:#fff;
+    border-radius:16px;
+    padding:30px 25px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    transition:0.3s;
+}
+.contact-form-container:hover { box-shadow:0 10px 22px rgba(0,0,0,0.1); }
+.contact-form-container h2 { font-size:24px; color:#233b8f; margin-bottom:20px; text-align:center; }
+
+/* Form Styling */
+.contact-form .form-group { margin-bottom:18px; position:relative; }
+.contact-form label { display:block; margin-bottom:6px; font-weight:600; }
+.contact-form input, .contact-form textarea {
+    width:100%;
+    padding:12px 16px 12px 36px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+    transition:0.3s;
+}
+.contact-form input:focus, .contact-form textarea:focus { border-color:#233b8f; outline:none; }
+.contact-form textarea { resize:none; min-height:100px; }
+
+.contact-form .fa { position:absolute; top:36px; left:10px; color:#aaa; transition:0.3s; }
+.contact-form input:focus + .fa, .contact-form textarea:focus + .fa { color:#233b8f; }
+
+.contact-form button {
+    background:#fbbf24;
+    color:#1f2937;
+    border:none;
+    padding:12px 24px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.3s;
+    width:100%;
+    margin-top:8px;
+}
+.contact-form button:hover { background:#f59e0b; transform:scale(1.02); }
+
+.success-message {
+    text-align:center;
+    margin-bottom:15px;
+    padding:10px 18px;
+    border-radius:6px;
+    background:#d1fae5;
+    color:#065f46;
+    font-weight:600;
+    border:1px solid #10b981;
+}
+
+.error-message { color:#b91c1c; font-size:12px; margin-top:4px; }
+
+/* ================= FOOTER ================= */
+footer {
+    background: #1f2937;
+    color: #fff;
+    padding: 35px 20px 20px 20px;
+    margin-top:50px;
+}
+.footer-container { max-width:1200px; margin:auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; }
+.footer-col { flex:1 1 220px; }
+.footer-col h4 { font-size:17px; margin-bottom:18px; color:#fbbf24; }
+.footer-col ul { list-style:none; }
+.footer-col ul li { margin-bottom:10px; }
+.footer-col ul li a { color:#fff; text-decoration:none; font-size:14px; }
+.footer-col ul li a:hover { color:#fbbf24; }
+.footer-bottom { text-align:center; margin-top:25px; font-size:13px; color:#aaa; }
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:600px) {
+    .contact-section { margin:30px 15px; }
+    .footer-container { flex-direction:column; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header>
+    <div class="navbar">
+        <div class="logo">📘 StoryLearnC++</div>
+        <div class="nav-links">
+            <a href="{% url 'accounts:landing' %}">Home</a>
+            <a href="#">Chapters</a>
+            <a href="#">Chatbot</a>
+            <a href="{% url 'accounts:login' %}">Login</a>
+            <a href="{% url 'accounts:signup' %}">Signup</a>
+            <a href="{% url 'accounts:contact' %}">Contact Page</a>
+        </div>
+    </div>
+</header>
+
+<!-- ================= CONTACT SECTION ================= -->
+<section class="contact-section">
+    <div class="contact-form-container">
+        <h2>Contact Us</h2>
+        {% if messages %}
+            <div class="success-message">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="POST" class="contact-form" id="contactForm">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                <i class="fa fa-user"></i>
+                {% if form.name.errors %}<div class="error-message">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                <i class="fa fa-envelope"></i>
+                {% if form.email.errors %}<div class="error-message">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.subject.label_tag }}
+                {{ form.subject }}
+                <i class="fa fa-tag"></i>
+                {% if form.subject.errors %}<div class="error-message">{{ form.subject.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.message.label_tag }}
+                {{ form.message }}
+                <i class="fa fa-comment"></i>
+                {% if form.message.errors %}<div class="error-message">{{ form.message.errors.0 }}</div>{% endif %}
+            </div>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+    <div class="footer-container">
+        <div class="footer-col">
+            <h4>StoryLearnC++</h4>
+            <p>Learn C++ programming with stories, challenges, and AI guidance. Join our community and start coding today!</p>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+                <li><a href="#">Chapters</a></li>
+                <li><a href="#">Chatbot</a></li>
+                <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                <li><a href="{% url 'accounts:signup' %}">Signup</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Contact Info</h4>
+            <ul>
+                <li>Email: support@storylearncpp.com</li>
+                <li>Phone: +977 9800000000</li>
+                <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 StoryLearnC++. All rights reserved.
+    </div>
+</footer>
+
+<script>
+// ================= FRONTEND VALIDATION =================
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    let valid = true;
+    const form = e.target;
+    
+    const name = form.querySelector('[name="name"]');
+    const email = form.querySelector('[name="email"]');
+    const subject = form.querySelector('[name="subject"]');
+    const message = form.querySelector('[name="message"]');
+    
+    form.querySelectorAll('.error-message').forEach(el => el.remove());
+    
+    if(name.value.trim() === '') {
+        const err = document.createElement('div'); err.className='error-message'; err.innerText='Please enter your name';
+        name.parentNode.appendChild(err); valid=false;
+    }
+    
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(email.value.trim() === '') {
+        const err = document.createElement('div'); err.className='error-message'; err.innerText='Please enter your email';
+        email.parentNode.appendChild(err); valid=false;
+    } else if(!emailPattern.test(email.value.trim())) {
+        const err = document.createElement('div'); err.className='error-message'; err.innerText='Please enter a valid email';
+        email.parentNode.appendChild(err); valid=false;
+    }
+    
+    if(subject.value.trim() === '') {
+        const err = document.createElement('div'); err.className='error-message'; err.innerText='Please enter subject';
+        subject.parentNode.appendChild(err); valid=false;
+    }
+    
+    if(message.value.trim() === '') {
+        const err = document.createElement('div'); err.className='error-message'; err.innerText='Please enter your message';
+        message.parentNode.appendChild(err); valid=false;
+    }
+    
+    if(!valid) e.preventDefault();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,782 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | StoryLearnC++</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #233b8f;
+  --navy-dark: #172869;
+  --navy-deeper: #0f1d4a;
+  --navy-glow: rgba(35,59,143,0.18);
+  --accent: #f5a623;
+  --accent-light: #ffd07a;
+  --accent-pale: #fff8ed;
+  --teal: #1ab8d8;
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --text: #1e293b;
+  --muted: #5a6a8a;
+  --border: #d8e2f8;
+  --card-shadow: 0 4px 24px rgba(35,59,143,0.10);
+  --card-shadow-hover: 0 14px 40px rgba(35,59,143,0.16);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* dot grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(35,59,143,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ══════════════════════════════
+   TOP NAVBAR
+══════════════════════════════ */
+.topnav {
+  background: var(--navy);
+  box-shadow: 0 2px 24px rgba(15,29,74,0.30);
+  position: sticky; top: 0; z-index: 200;
+  transition: transform 0.3s ease; flex-shrink: 0;
+}
+.topnav-inner {
+  max-width: 100%; padding: 0 28px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo-h {
+  display: flex; align-items: center; gap: 10px;
+  color: #fff; font-size: 18px; font-weight: 800;
+  letter-spacing: -0.3px; text-decoration: none; white-space: nowrap;
+}
+.logo-h .logo-icon {
+  width: 34px; height: 34px; background: var(--accent);
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 16px; transition: transform 0.3s; flex-shrink: 0;
+}
+.logo-h:hover .logo-icon { transform: rotate(-8deg) scale(1.1); }
+
+.topnav-search { flex: 1; max-width: 380px; margin: 0 24px; }
+.topnav-search input {
+  width: 100%; padding: 9px 18px; border-radius: 24px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.10); color: #fff;
+  font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s;
+}
+.topnav-search input::placeholder { color: rgba(255,255,255,0.50); }
+.topnav-search input:focus { border-color: var(--accent); background: rgba(255,255,255,0.15); }
+
+.topnav-right { display: flex; align-items: center; gap: 8px; }
+.topnav-right a {
+  color: rgba(255,255,255,0.80); text-decoration: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 14px; font-weight: 500; transition: all 0.2s;
+}
+.topnav-right a:hover { color: #fff; background: rgba(255,255,255,0.10); }
+.topnav-right .logout-btn {
+  background: rgba(245,166,35,0.15); color: var(--accent);
+  border: 1px solid rgba(245,166,35,0.30); font-weight: 600;
+  border-radius: 8px; padding: 7px 16px;
+}
+.topnav-right .logout-btn:hover { background: var(--accent); color: var(--navy-dark); }
+
+/* ══════════════════════════════
+   LAYOUT
+══════════════════════════════ */
+.layout { display: flex; flex: 1; position: relative; z-index: 1; }
+
+/* ══════════════════════════════
+   SIDEBAR
+══════════════════════════════ */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--navy-deeper);
+  display: flex; flex-direction: column;
+  padding: 28px 16px 24px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  position: sticky; top: 64px;
+  height: calc(100vh - 64px); overflow-y: auto;
+}
+.logo-v {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; text-decoration: none; margin-bottom: 36px;
+  padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.logo-v .logo-icon-v {
+  width: 48px; height: 48px; background: var(--accent);
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 24px; transition: transform 0.3s;
+}
+.logo-v:hover .logo-icon-v { transform: rotate(-8deg) scale(1.08); }
+.logo-v span { color: #fff; font-size: 13px; font-weight: 800; text-align: center; line-height: 1.3; }
+
+.sidebar-profile {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06); border-radius: 12px;
+  padding: 10px 12px; margin-bottom: 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.profile-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, #e8940d 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: var(--navy-dark); flex-shrink: 0;
+}
+.profile-info { overflow: hidden; }
+.profile-name { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-role { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 1px; }
+
+.nav-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.30);
+  padding: 0 8px; margin-bottom: 8px;
+}
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
+.sidebar-nav a {
+  display: flex; align-items: center; gap: 10px;
+  color: rgba(255,255,255,0.65); text-decoration: none;
+  padding: 10px 12px; border-radius: 10px;
+  font-size: 14px; font-weight: 500; transition: all 0.2s;
+  position: relative;
+}
+.sidebar-nav a .nav-icon { font-size: 16px; flex-shrink: 0; }
+.sidebar-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+/* DASHBOARD active state — highlighted pill */
+.sidebar-nav a.active {
+  background: var(--navy);
+  color: #fff; font-weight: 700;
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 4px 16px rgba(35,59,143,0.35);
+}
+.sidebar-nav a.active .nav-icon { filter: drop-shadow(0 0 4px rgba(245,166,35,0.5)); }
+
+.sidebar-bottom { margin-top: auto; }
+.sidebar-bottom a {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--accent); text-decoration: none;
+  padding: 10px 12px; border-radius: 10px;
+  font-size: 14px; font-weight: 600; transition: all 0.2s;
+  border: 1px solid rgba(245,166,35,0.20);
+}
+.sidebar-bottom a:hover { background: var(--accent); color: var(--navy-dark); }
+
+/* ══════════════════════════════
+   MAIN
+══════════════════════════════ */
+.main { flex: 1; padding: 36px 36px 60px; overflow-x: hidden; }
+
+/* ══════════════════════════════
+   HERO WELCOME BANNER
+══════════════════════════════ */
+.hero-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 55%, #1a3580 100%);
+  border-radius: 20px;
+  padding: 40px 44px;
+  margin-bottom: 36px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(35,59,143,0.28);
+  animation: fadeUp 0.5s ease both;
+}
+
+/* decorative circles */
+.hero-banner::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+}
+.hero-banner::after {
+  content: '';
+  position: absolute; bottom: -80px; left: 30%;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,166,35,0.08) 0%, transparent 70%);
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(245,166,35,0.12);
+  border: 1px solid rgba(245,166,35,0.25);
+  padding: 5px 14px; border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.hero-title .hi { color: rgba(255,255,255,0.6); font-weight: 700; }
+.hero-title .name { color: var(--accent); }
+
+.hero-sub {
+  font-size: 15px; color: rgba(255,255,255,0.6);
+  max-width: 480px; line-height: 1.65;
+  position: relative; z-index: 1;
+  margin-bottom: 28px;
+}
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+
+.hero-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 24px; border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+  text-decoration: none; transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  border: none; cursor: pointer; font-family: inherit;
+}
+.hero-btn-primary {
+  background: var(--accent); color: var(--navy-dark);
+  box-shadow: 0 4px 18px rgba(245,166,35,0.35);
+}
+.hero-btn-primary:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.4); }
+.hero-btn-outline {
+  background: rgba(255,255,255,0.08); color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.2);
+}
+.hero-btn-outline:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+
+/* XP progress inside hero */
+.hero-xp-row {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 20px;
+  flex-wrap: wrap;
+  position: relative; z-index: 1;
+}
+.hero-xp-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px; font-weight: 600; letter-spacing: 0.5px; }
+.hero-xp-val { font-size: 15px; font-weight: 800; color: #fff; }
+.hero-xp-track { flex: 1; min-width: 180px; }
+.hero-xp-bar-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.hero-xp-bar-fill {
+  height: 100%; width: {{ progress_percent|default:55 }}%;
+  background: linear-gradient(90deg, var(--accent), #ffd47a);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(245,166,35,0.5);
+  animation: barGrow 1s 0.5s cubic-bezier(0.34,1.2,0.64,1) both;
+  transform-origin: left;
+}
+@keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.hero-stat {
+  text-align: center;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+}
+.hero-stat-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent); line-height: 1; }
+.hero-stat-key { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ══════════════════════════════
+   SECTION HEADER
+══════════════════════════════ */
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 18px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px; font-weight: 800;
+  color: var(--navy-dark);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block; width: 4px; height: 18px;
+  background: linear-gradient(to bottom, var(--navy), var(--teal));
+  border-radius: 2px;
+}
+
+/* ══════════════════════════════
+   CARDS ROW
+══════════════════════════════ */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 36px;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  transition: transform 0.25s, box-shadow 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--teal));
+  border-radius: 16px 16px 0 0;
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+
+.card-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(35,59,143,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 16px;
+}
+
+.card-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
+}
+.card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 800; color: var(--navy-dark); margin-bottom: 14px;
+}
+
+/* progress inside card */
+.progress-bar { background: #e8edf8; border-radius: 10px; overflow: hidden; height: 8px; margin: 10px 0 8px; }
+.progress {
+  width: {{ progress_percent|default:55 }}%; height: 100%;
+  background: linear-gradient(90deg, var(--navy) 0%, var(--teal) 100%);
+  border-radius: 10px;
+  animation: barGrow 1s 0.7s cubic-bezier(0.34,1.2,0.64,1) both;
+  transform-origin: left;
+}
+.xp-text { font-size: 13px; font-weight: 700; color: var(--navy); }
+
+.learner-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 500;
+}
+.learner-row:last-child { border-bottom: none; }
+.learner-rank { color: var(--muted); font-size: 12px; margin-right: 4px; }
+.learner-xp { font-weight: 700; color: var(--navy); font-size: 13px; }
+
+.badge-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 500;
+}
+.badge-row:last-child { border-bottom: none; }
+.badge-icon-sm {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(245,166,35,0.12); border: 1px solid rgba(245,166,35,0.2);
+  display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+}
+
+/* ══════════════════════════════
+   QUICK ACTION CARDS
+══════════════════════════════ */
+.quick-actions {
+  margin-bottom: 36px;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.action-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 18px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--card-shadow);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  overflow: hidden;
+}
+.action-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(35,59,143,0.04), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.action-card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow-hover); border-color: var(--navy); }
+.action-card:hover::after { opacity: 1; }
+.action-emoji { font-size: 32px; margin-bottom: 10px; display: block; }
+.action-label {
+  font-size: 13px; font-weight: 700; color: var(--navy-dark); margin-bottom: 3px;
+}
+.action-sub { font-size: 11px; color: var(--muted); }
+
+/* ══════════════════════════════
+   MOTIVATION STRIP
+══════════════════════════════ */
+.motivation-strip {
+  background: linear-gradient(90deg, var(--accent-pale) 0%, #fff 100%);
+  border: 1px solid rgba(245,166,35,0.25);
+  border-radius: 14px;
+  padding: 20px 28px;
+  display: flex; align-items: center; gap: 18px;
+  margin-bottom: 0;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+.motivation-strip .ms-icon { font-size: 36px; flex-shrink: 0; }
+.motivation-strip .ms-text { }
+.motivation-strip .ms-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 800; color: var(--navy-dark); margin-bottom: 3px;
+}
+.motivation-strip .ms-sub { font-size: 13px; color: var(--muted); }
+.motivation-strip .ms-btn {
+  margin-left: auto; flex-shrink: 0;
+  padding: 10px 22px; border-radius: 8px;
+  background: var(--navy); color: #fff;
+  text-decoration: none; font-size: 13px; font-weight: 700;
+  transition: all 0.2s; white-space: nowrap;
+}
+.motivation-strip .ms-btn:hover { background: var(--navy-dark); transform: translateY(-1px); }
+
+/* ══════════════════════════════
+   ANIMATIONS
+══════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer { background: var(--navy-deeper); border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; position: relative; z-index: 1; }
+.footer-top {
+  max-width: 100%; padding: 48px 40px 36px;
+  display: grid; grid-template-columns: 1.7fr 1fr 1fr 1fr; gap: 40px;
+}
+.footer-brand .f-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.f-logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.f-logo span { color: #fff; font-size: 16px; font-weight: 800; }
+.footer-brand p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.75; max-width: 220px; margin-bottom: 20px; }
+.social-links { display: flex; gap: 8px; }
+.social-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.10);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.55); text-decoration: none; font-size: 13px; transition: all 0.25s;
+}
+.social-btn:hover { background: var(--accent); color: var(--navy-dark); border-color: var(--accent); transform: translateY(-3px); }
+.footer-col h4 { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.88); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 9px; }
+.footer-col ul li a, .footer-col ul li span { color: rgba(255,255,255,0.48); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+.footer-col ul li a:hover { color: var(--accent); }
+.footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); }
+.footer-bottom {
+  padding: 16px 40px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+}
+.footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.28); }
+.footer-bottom-links { display: flex; gap: 20px; }
+.footer-bottom-links a { font-size: 12px; color: rgba(255,255,255,0.28); text-decoration: none; transition: color 0.2s; }
+.footer-bottom-links a:hover { color: var(--accent); }
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 1100px) {
+  .cards-row { grid-template-columns: 1fr 1fr; }
+  .action-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 24px; padding: 36px 24px 28px; }
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .cards-row { grid-template-columns: 1fr; }
+  .main { padding: 20px 16px 40px; }
+  .topnav-search { display: none; }
+  .hero-banner { padding: 28px 24px; }
+  .hero-title { font-size: 24px; }
+  .action-grid { grid-template-columns: repeat(2, 1fr); }
+  .motivation-strip { flex-wrap: wrap; }
+  .motivation-strip .ms-btn { margin-left: 0; }
+  .footer-top { grid-template-columns: 1fr; padding: 32px 20px 24px; }
+  .footer-bottom { flex-direction: column; text-align: center; padding: 14px 20px; }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--navy); }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAVBAR ══ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="#" class="logo-h">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+    <div class="topnav-search">
+      <input type="text" placeholder="Search chapter or mission…">
+    </div>
+  </div>
+</nav>
+
+<!-- ══ LAYOUT ══ -->
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <a href="#" class="logo-v">
+      {% comment %} <div class="logo-icon-v">📘</div> {% endcomment %}
+      {% comment %} <span>StoryLearn<br>C++</span> {% endcomment %}
+    </a>
+
+    <div class="sidebar-profile">
+      <div class="profile-avatar">{{ user.first_name|first }}</div>
+      <div class="profile-info">
+        <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+        <div class="profile-role">Level {{ level }}</div>
+      </div>
+    </div>
+
+    <div class="nav-label">Navigation</div>
+    <nav class="sidebar-nav">
+      <!-- Dashboard is active -->
+      <a href="{% url 'accounts:dashboard' %}" class="active">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+      <a href="{% url 'learning:chapter_list' %}">
+        <span class="nav-icon">📚</span> Chapters
+      </a>
+      <a href="{% url 'game:game_hub' %}">
+        <span class="nav-icon">🎮</span> Game
+      </a>
+      <a href="{% url 'learning:leaderboard' %}">
+        <span class="nav-icon">🏆</span> Leaderboard
+      </a>
+      <a href="{% url 'learning:achievements' %}">
+        <span class="nav-icon">🎖</span> Achievements
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a href="{% url 'accounts:logout' %}">
+        <span>🚪</span> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- HERO WELCOME BANNER -->
+    <div class="hero-banner">
+      <div class="hero-eyebrow">⚡ Dashboard</div>
+      <h1 class="hero-title">
+        <span class="hi">Welcome back, </span><span class="name">{{ user.first_name }}</span> 👋
+      </h1>
+      <p class="hero-sub">
+        You're on <strong style="color:#fff;">Level {{ level }}</strong>. Keep pushing forward — every line of code written is a step closer to mastery.
+      </p>
+      <div class="hero-actions">
+        <a href="{% url 'learning:chapter_list' %}" class="hero-btn hero-btn-primary">📚 Continue Learning</a>
+        <a href="{% url 'learning:achievements' %}" class="hero-btn hero-btn-outline">🎖 My Achievements</a>
+      </div>
+      <div class="hero-xp-row">
+        <div>
+          <div class="hero-xp-label">EXPERIENCE POINTS</div>
+          <div class="hero-xp-val">{{ xp }} / {{ xp_next }} XP</div>
+        </div>
+        <div class="hero-xp-track">
+          <div class="hero-xp-bar-bg">
+            <div class="hero-xp-bar-fill"></div>
+          </div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">{{ level }}</div>
+          <div class="hero-stat-key">Level</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">{{ xp }}</div>
+          <div class="hero-stat-key">Total XP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+      <div class="section-header">
+        <div class="section-title">Quick Actions</div>
+      </div>
+      <div class="action-grid">
+        <a href="{% url 'learning:chapter_list' %}" class="action-card">
+          <span class="action-emoji">📖</span>
+          <div class="action-label">Chapters</div>
+          <div class="action-sub">Browse all lessons</div>
+        </a>
+        <a href="{% url 'game:game_hub' %}" class="action-card">
+          <span class="action-emoji">🎮</span>
+          <div class="action-label">Game Hub</div>
+          <div class="action-sub">Play & practice</div>
+        </a>
+        <a href="{% url 'learning:leaderboard' %}" class="action-card">
+          <span class="action-emoji">🏆</span>
+          <div class="action-label">Leaderboard</div>
+          <div class="action-sub">See top learners</div>
+        </a>
+        <a href="{% url 'learning:achievements' %}" class="action-card">
+          <span class="action-emoji">🎖</span>
+          <div class="action-label">Achievements</div>
+          <div class="action-sub">Your badges & XP</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div class="section-header">
+      <div class="section-title">Your Stats</div>
+    </div>
+    <section class="cards-row">
+
+      <!-- Progress Card -->
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <div class="card-label">Your Progress</div>
+        <h4>Level {{ level }} Explorer</h4>
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+        <span class="xp-text">{{ xp }} / {{ xp_next }} XP to next level</span>
+      </div>
+
+      <!-- Top Learners -->
+      <div class="card">
+        <div class="card-icon">🥇</div>
+        <div class="card-label">Top Learners</div>
+        <h4>Leaderboard</h4>
+        {% for learner in top_learners %}
+          <div class="learner-row">
+            <span><span class="learner-rank">{{ forloop.counter }}.</span> {{ learner.user.username }}</span>
+            <span class="learner-xp">{{ learner.xp }} XP</span>
+          </div>
+        {% empty %}
+          <p style="color:var(--muted);font-size:13px;">No learners yet.</p>
+        {% endfor %}
+      </div>
+
+      <!-- Recent Badges -->
+      <div class="card">
+        <div class="card-icon">🏅</div>
+        <div class="card-label">Recent Badges</div>
+        <h4>Latest Achievements</h4>
+        {% for badge in recent_badges %}
+          <div class="badge-row">
+            <div class="badge-icon-sm">🏆</div>
+            {{ badge.badge.name }}
+          </div>
+        {% empty %}
+          <p style="color:var(--muted);font-size:13px;margin-bottom:8px;">No badges earned yet.</p>
+          <a href="{% url 'learning:chapter_list' %}" style="font-size:13px;color:var(--navy);font-weight:700;text-decoration:none;">Start your first chapter →</a>
+        {% endfor %}
+      </div>
+
+    </section>
+
+    <!-- MOTIVATION STRIP -->
+    <div class="motivation-strip">
+      <div class="ms-icon">💡</div>
+      <div class="ms-text">
+        <div class="ms-title">Ready for your next challenge?</div>
+        <div class="ms-sub">Dive into a chapter and earn XP, unlock badges, and climb the leaderboard.</div>
+      </div>
+      <a href="{% url 'learning:chapter_list' %}" class="ms-btn">Browse Chapters →</a>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">
+        <div class="f-logo-icon">📘</div>
+        <span>StoryLearnC++</span>
+      </div>
+      <p>Learn C++ programming through engaging stories, real coding challenges, and AI guidance.</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+        <li><a href="{% url 'learning:chapter_list' %}">Chapters</a></li>
+        <li><a href="{% url 'game:game_hub' %}">Game</a></li>
+        <li><a href="{% url 'learning:leaderboard' %}">Leaderboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="{% url 'learning:achievements' %}">Achievements</a></li>
+        <li><a href="#">My Progress</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+        <li><span>support@storylearncpp.com</span></li>
+        <li><span>+977 9800000000</span></li>
+        <li><a href="#">Twitter</a> · <a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 StoryLearnC++. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Topnav hide on scroll down */
+  let lastY = 0;
+  const topnav = document.querySelector('.topnav');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    topnav.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  });
+</script>
+</body>
+</html>

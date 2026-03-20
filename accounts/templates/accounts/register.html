@@ -1,0 +1,489 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up | StoryLearnC++</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --navy: #233b8f;
+  --navy-dark: #172869;
+  --navy-deeper: #0f1d4a;
+  --accent: #f5a623;
+  --accent-light: #ffd07a;
+  --teal: #1ab8d8;
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --text: #1e293b;
+  --muted: #5a6a8a;
+  --border: #d8e2f8;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity:0; } to { opacity:1; }
+}
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top:0; z-index:100;
+  background: var(--navy);
+  box-shadow: 0 2px 24px rgba(15,29,74,0.30);
+  animation: fadeIn 0.5s ease both;
+  transition: transform 0.3s ease;
+}
+.navbar {
+  max-width:1200px; margin:auto;
+  padding:0 40px; height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  color:#fff; font-size:20px; font-weight:800; letter-spacing:-0.3px;
+  text-decoration:none;
+}
+.logo-icon {
+  width:36px; height:36px;
+  background: var(--accent);
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  transition: transform 0.3s;
+}
+.logo:hover .logo-icon { transform: rotate(-8deg) scale(1.1); }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-links a {
+  color:rgba(255,255,255,0.80); text-decoration:none;
+  padding:8px 15px; border-radius:8px;
+  font-size:14px; font-weight:500;
+  transition: all 0.2s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:4px; left:50%; right:50%;
+  height:2px; background:var(--accent); border-radius:2px;
+  transition: left 0.25s, right 0.25s;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,0.09); }
+.nav-links a:hover::after { left:15px; right:15px; }
+.nav-links .btn-nav {
+  background:var(--accent); color:var(--navy-dark); font-weight:700;
+  padding:8px 22px; border-radius:8px; margin-left:6px;
+  box-shadow:0 2px 12px rgba(245,166,35,0.35);
+  transition: all 0.25s;
+}
+.nav-links .btn-nav::after { display:none; }
+.nav-links .btn-nav:hover { background:var(--accent-light); transform:translateY(-2px); box-shadow:0 6px 18px rgba(245,166,35,0.45); }
+
+/* ── SIGNUP MAIN ── */
+.signup-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 20px;
+  background: linear-gradient(135deg, #dce8ff 0%, #c8daff 50%, #d0f0fb 100%);
+  position: relative;
+}
+.signup-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top left, rgba(35,59,143,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(26,184,216,0.10) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ── CARD ── */
+.card {
+  position: relative;
+  z-index: 1;
+  background: var(--white);
+  width: 400px;
+  padding: 40px 36px;
+  border-radius: 22px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15,29,74,0.18);
+  border: 1.5px solid var(--border);
+  animation: slideUp 0.6s cubic-bezier(.22,.68,0,1.2) 0.1s both;
+}
+
+.signup-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.signup-logo-icon {
+  width: 40px; height: 40px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.signup-logo span {
+  font-size: 17px; font-weight: 800;
+  color: var(--navy-dark); letter-spacing: -0.3px;
+}
+
+.card h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy-dark);
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+}
+.card .subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 26px;
+}
+
+/* ── INPUTS ── */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+.input-group input {
+  width: 100%;
+  height: 46px;
+  padding: 0 44px 0 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none;
+  color: var(--text);
+  background: #f7f9ff;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.input-group input:focus {
+  border-color: var(--navy);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(35,59,143,0.10);
+}
+.input-group i {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+.input-group small {
+  position: absolute;
+  left: 2px;
+  bottom: -16px;
+  font-size: 11px;
+  color: #dc2626;
+}
+
+/* ── BUTTON ── */
+.btn-signup {
+  width: 100%;
+  height: 46px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.25s;
+  box-shadow: 0 4px 20px rgba(35,59,143,0.30);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-signup:hover {
+  background: var(--navy-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(35,59,143,0.38);
+}
+
+/* ── LOGIN LINK ── */
+.login-text {
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.login-text a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s;
+}
+.login-text a:hover { color: var(--teal); }
+
+/* ── FOOTER ── */
+footer { background:var(--navy-deeper); border-top:1px solid rgba(255,255,255,0.07); }
+.footer-top {
+  max-width:1200px; margin:auto;
+  padding:64px 40px 44px;
+  display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:44px;
+}
+.footer-brand .f-logo { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.f-logo-icon { width:34px; height:34px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.f-logo span { color:#fff; font-size:17px; font-weight:800; }
+.footer-brand p { font-size:13.5px; color:rgba(255,255,255,0.48); line-height:1.75; max-width:230px; margin-bottom:24px; }
+.social-links { display:flex; gap:10px; }
+.social-btn {
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.10);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.55); text-decoration:none; font-size:14px;
+  transition:all 0.25s;
+}
+.social-btn:hover { background:var(--accent); color:var(--navy-dark); border-color:var(--accent); transform:translateY(-3px); }
+.footer-col h4 { font-size:12px; font-weight:700; color:rgba(255,255,255,0.88); letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+.footer-col ul { list-style:none; }
+.footer-col ul li { margin-bottom:11px; }
+.footer-col ul li a, .footer-col ul li span { color:rgba(255,255,255,0.50); text-decoration:none; font-size:14px; transition:color 0.2s; }
+.footer-col ul li a:hover { color:var(--accent); }
+.footer-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); }
+.footer-bottom {
+  max-width:1200px; margin:auto; padding:20px 40px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-bottom p { font-size:13px; color:rgba(255,255,255,0.30); }
+.footer-bottom-links { display:flex; gap:22px; }
+.footer-bottom-links a { font-size:13px; color:rgba(255,255,255,0.30); text-decoration:none; transition:color 0.2s; }
+.footer-bottom-links a:hover { color:var(--accent); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:1024px) {
+  .footer-top { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:600px) {
+  .navbar { padding:0 20px; }
+  .nav-links a:not(.btn-nav) { display:none; }
+  .card { width:100%; max-width:360px; padding:32px 20px; }
+  .footer-top { grid-template-columns:1fr; padding:44px 24px 36px; }
+  .footer-bottom { flex-direction:column; text-align:center; padding:18px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="navbar">
+    <a href="{% url 'accounts:landing' %}" class="logo">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'accounts:landing' %}">Home</a>
+      <a href="#">Chapters</a>
+      {% comment %} <a href="#">Chatbot</a> {% endcomment %}
+      <a href="{% url 'accounts:login' %}">Login</a>
+      {% comment %} <a href="{% url 'accounts:signup' %}" class="btn-nav">Get Started</a> {% endcomment %}
+    </div>
+  </div>
+</header>
+
+<!-- ── SIGNUP SECTION ── -->
+<main class="signup-main">
+  <div class="card">
+
+    <div class="signup-logo">
+      <div class="signup-logo-icon">📘</div>
+      <span>StoryLearnC++</span>
+    </div>
+
+    <h2>Create Account</h2>
+    {% comment %} <p class="subtitle">Start your C++ journey for free</p> {% endcomment %}
+
+    <form id="signupForm" method="POST" action="{% url 'accounts:signup' %}">
+      {% csrf_token %}
+
+      <div class="input-group">
+        <input type="text" id="firstName" name="first_name" placeholder="First Name">
+        <i class="fa fa-user"></i>
+        <small></small>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="lastName" name="last_name" placeholder="Last Name">
+        <i class="fa fa-user"></i>
+        <small></small>
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="Email">
+        <i class="fa fa-envelope"></i>
+        <small></small>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Password">
+        <i class="fa fa-lock"></i>
+        <small></small>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password">
+        <i class="fa fa-lock"></i>
+        <small></small>
+      </div>
+
+      <button type="submit" class="btn-signup">Sign Up →</button>
+    </form>
+
+    <p class="login-text">
+      Already have an account?
+      <a href="{% url 'accounts:login' %}">Login</a>
+    </p>
+  </div>
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">
+        <div class="f-logo-icon">📘</div>
+        <span>StoryLearnC++</span>
+      </div>
+      <p>Learn C++ programming through engaging stories, real coding challenges, and AI guidance. Start your journey today.</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="{% url 'accounts:landing' %}">Home</a></li>
+        <li><a href="#">Chapters</a></li>
+        <li><a href="#">Chatbot</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+        <li><a href="#">My Progress</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="{% url 'accounts:contact' %}">Contact Page</a></li>
+        <li><span>support@storylearncpp.com</span></li>
+        <li><span>+977 9800000000</span></li>
+        <li><a href="#">Twitter</a> &nbsp;·&nbsp; <a href="#">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 StoryLearnC++. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── VALIDATION SCRIPT (unchanged logic) ── -->
+<script>
+  const form = document.getElementById("signupForm");
+
+  form.addEventListener("submit", function (e) {
+    let valid = true;
+
+    valid &= validate("firstName", "First name is required");
+    valid &= validate("lastName", "Last name is required");
+    valid &= validateEmail();
+    valid &= validatePassword();
+    valid &= validateConfirmPassword();
+
+    if (!valid) e.preventDefault();
+  });
+
+  function validate(id, msg) {
+    const input = document.getElementById(id);
+    const error = input.nextElementSibling.nextElementSibling;
+    if (input.value.trim() === "") {
+      error.textContent = msg;
+      return false;
+    }
+    error.textContent = "";
+    return true;
+  }
+
+  function validateEmail() {
+    const email = document.getElementById("email");
+    const error = email.nextElementSibling.nextElementSibling;
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email.value.trim())) {
+      error.textContent = "Enter valid email";
+      return false;
+    }
+    error.textContent = "";
+    return true;
+  }
+
+  function validatePassword() {
+    const password = document.getElementById("password");
+    const error = password.nextElementSibling.nextElementSibling;
+    if (password.value.length < 6) {
+      error.textContent = "Min 6 characters";
+      return false;
+    }
+    error.textContent = "";
+    return true;
+  }
+
+  function validateConfirmPassword() {
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirmPassword");
+    const error = confirm.nextElementSibling.nextElementSibling;
+    if (password.value !== confirm.value) {
+      error.textContent = "Passwords do not match";
+      return false;
+    }
+    error.textContent = "";
+    return true;
+  }
+
+  /* Navbar hide on scroll down */
+  let lastY = 0;
+  const header = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y > lastY && y > 80) { header.style.transform = 'translateY(-100%)'; }
+    else { header.style.transform = 'translateY(0)'; }
+    lastY = y;
+  });
+</script>
+
+</body>
+</html>
