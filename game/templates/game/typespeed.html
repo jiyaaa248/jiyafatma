@@ -1,0 +1,342 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ Type Speed | StoryLearnC++</title>
+<meta name="csrf-token" content="{{ csrf_token }}">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue:#2563eb; --blue-pale:#eff6ff; --blue-100:#dbeafe; --blue-200:#bfdbfe; --navy:#1e3a8a;
+  --bg:#f5f8ff; --surface:#fff; --border:#e2e8f0; --text:#0f172a; --text-3:#64748b; --text-4:#94a3b8;
+  --green:#16a34a; --green-pale:#f0fdf4; --green-100:#dcfce7; --green-200:#a7f3d0;
+  --amber:#d97706; --amber-pale:#fffbeb; --amber-100:#fef3c7;
+  --red:#dc2626; --red-pale:#fef2f2; --red-100:#fecaca;
+  --purple:#7c3aed; --purple-pale:#faf5ff; --purple-100:#ede9fe; --purple-200:#ddd6fe;
+  --gold:#f59e0b;
+}
+body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
+body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(ellipse 70% 40% at 85% 10%,rgba(124,58,237,.04) 0%,transparent 60%); }
+
+/* NAV */
+.topnav { position:sticky; top:0; z-index:200; background:var(--surface); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,.06); height:64px; display:flex; align-items:center; padding:0 40px; gap:16px; }
+.tnav-logo { display:flex; align-items:center; gap:10px; font-size:17px; font-weight:900; color:var(--navy); text-decoration:none; flex-shrink:0; }
+.tnav-logo-icon { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--blue),#3b82f6); color:#fff; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.tnav-links { display:flex; gap:2px; flex:1; }
+.tnav-links a { color:var(--text-3); text-decoration:none; font-size:14px; font-weight:700; padding:7px 12px; border-radius:8px; transition:.15s; }
+.tnav-links a:hover { color:var(--blue); background:var(--blue-pale); }
+.nav-back { background:var(--blue-pale)!important; color:var(--blue)!important; border:1.5px solid var(--blue-200)!important; }
+
+/* PAGE */
+.page { position:relative; z-index:5; max-width:880px; margin:0 auto; padding:30px 28px 64px; }
+.game-title-row { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+.game-title-icon { width:52px; height:52px; border-radius:14px; background:var(--purple-pale); border:1.5px solid var(--purple-200); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; box-shadow:0 2px 8px rgba(124,58,237,.12); }
+.game-title-row h1 { font-size:24px; font-weight:900; color:var(--navy); letter-spacing:-.4px; }
+.game-title-row p  { font-size:13px; color:var(--text-3); margin-top:3px; font-weight:500; }
+
+/* HUD */
+.hud { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:20px; }
+.hud-tile { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,.04); position:relative; overflow:hidden; }
+.hud-tile::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:12px 12px 0 0; }
+.ht-wpm::after    { background:var(--purple); } .ht-acc::after  { background:var(--green); }
+.ht-xp::after     { background:var(--gold);   } .ht-time::after { background:var(--amber); }
+.ht-streak::after { background:var(--red); }
+.hud-label { font-size:9px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-4); margin-bottom:4px; }
+.hud-value { font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; line-height:1; }
+.ht-wpm    .hud-value { color:var(--purple); } .ht-acc    .hud-value { color:var(--green); }
+.ht-xp     .hud-value { color:var(--gold);   } .ht-time   .hud-value { color:var(--amber); }
+.ht-streak .hud-value { color:var(--red); }
+
+/* PROGRESS BAR */
+.progress-wrap { margin-bottom:16px; }
+.progress-track { height:8px; background:var(--blue-100); border-radius:8px; overflow:hidden; }
+.progress-fill  { height:100%; background:linear-gradient(90deg,var(--blue),#60a5fa); border-radius:8px; transition:width .15s ease; box-shadow:0 0 8px rgba(37,99,235,.25); }
+.progress-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text-4); margin-top:5px; font-weight:600; }
+
+/* TYPING AREA */
+.typing-box {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:18px; padding:28px 28px 24px;
+  box-shadow:0 4px 20px rgba(37,99,235,.07);
+  margin-bottom:14px; position:relative;
+}
+.typing-box::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:18px 18px 0 0; background:linear-gradient(90deg,var(--purple),#a78bfa,var(--purple)); background-size:200%; animation:scanBar 3s linear infinite; }
+@keyframes scanBar { 0%{background-position:0%} 100%{background-position:200%} }
+
+.snippet-meta { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+.snip-tag { font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:3px 10px; border-radius:5px; background:var(--purple-pale); color:var(--purple); border:1px solid var(--purple-200); }
+.snip-xp  { font-size:12px; font-weight:700; color:var(--gold); }
+.snip-num { font-size:12px; font-weight:700; color:var(--text-4); font-family:'JetBrains Mono',monospace; margin-left:auto; }
+
+/* Code display */
+.code-display {
+  font-family:'JetBrains Mono',monospace; font-size:17px; line-height:1.85;
+  min-height:52px; margin-bottom:20px; letter-spacing:.3px;
+  word-break:break-all; background:var(--bg); border-radius:10px;
+  padding:14px 16px; border:1.5px solid var(--border);
+}
+.c-ok   { color:var(--green); background:var(--green-pale); border-radius:2px; }
+.c-err  { color:var(--red); background:var(--red-pale); text-decoration:underline; border-radius:2px; }
+.c-wait { color:#c7d2e8; }
+.c-cur  { color:var(--navy); border-left:2.5px solid var(--purple); padding-left:1px; animation:curBlink .75s infinite; }
+@keyframes curBlink { 0%,100%{border-color:var(--purple)} 50%{border-color:transparent} }
+
+/* Input */
+.type-input { width:100%; background:var(--surface); border:2px solid var(--border); border-radius:12px; padding:14px 18px; font-family:'JetBrains Mono',monospace; font-size:15px; color:var(--navy); outline:none; transition:border-color .15s,box-shadow .15s; caret-color:var(--purple); }
+.type-input:focus { border-color:var(--purple); box-shadow:0 0 0 3px rgba(124,58,237,.1); }
+.type-input.wrong { border-color:var(--red); background:var(--red-pale); box-shadow:0 0 0 3px rgba(220,38,38,.1); }
+
+/* OVERLAY */
+#overlay { position:fixed; inset:0; z-index:300; background:rgba(245,248,255,.97); backdrop-filter:blur(5px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; gap:0; }
+.ov-badge { font-size:11px; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--purple); background:var(--purple-pale); border:1.5px solid var(--purple-200); padding:5px 16px; border-radius:40px; margin-bottom:20px; }
+.ov-icon  { font-size:60px; margin-bottom:16px; line-height:1; }
+.ov-title { font-size:30px; font-weight:900; color:var(--navy); text-align:center; letter-spacing:-1px; margin-bottom:10px; }
+.ov-desc  { font-size:14px; color:var(--text-3); text-align:center; line-height:1.75; max-width:420px; margin-bottom:24px; font-weight:500; }
+
+.mode-btns { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:24px; }
+.mode-btn { padding:12px 20px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-3); cursor:pointer; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; transition:.2s; text-align:center; min-width:130px; }
+.mode-btn:hover, .mode-btn.active { background:var(--purple-pale); border-color:var(--purple-200); color:var(--purple); }
+.mode-btn span { display:block; font-size:11px; color:var(--text-4); margin-top:3px; font-weight:600; }
+
+.result-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:380px; margin-bottom:24px; }
+.r-tile { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:14px 8px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.r-val  { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--purple); display:block; }
+.r-lbl  { font-size:10px; font-weight:700; color:var(--text-4); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+.btn-start { background:linear-gradient(135deg,var(--purple),#a78bfa); color:#fff; border:none; padding:14px 48px; border-radius:40px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:900; cursor:pointer; transition:.25s; box-shadow:0 6px 20px rgba(124,58,237,.28); }
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(124,58,237,.38); }
+.btn-back { color:var(--text-4); font-size:13px; text-decoration:none; margin-top:12px; font-weight:600; }
+
+/* XP popup */
+.xp-pop { position:fixed; pointer-events:none; z-index:400; font-family:'Nunito',sans-serif; font-weight:900; font-size:18px; color:var(--gold); text-shadow:0 2px 6px rgba(245,158,11,.3); animation:popUp .9s ease-out forwards; }
+@keyframes popUp { 0%{opacity:1;transform:translateY(0) scale(.8)} 50%{opacity:1;transform:translateY(-28px) scale(1.1)} 100%{opacity:0;transform:translateY(-60px) scale(.9)} }
+
+@media(max-width:640px){ .hud{grid-template-columns:repeat(3,1fr);} .topnav{padding:0 18px;} .page{padding:18px 14px 48px;} }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="{% url 'accounts:landing' %}" class="tnav-logo">
+    <div class="tnav-logo-icon">📘</div>StoryLearnC++
+  </a>
+  <div class="tnav-links">
+    <a href="{% url 'game:game' %}" class="nav-back">← All Games</a>
+    <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="game-title-row">
+    <div class="game-title-icon">⚡</div>
+    <div>
+      <h1>C++ Type Speed</h1>
+      <p>Race the clock · accuracy multiplies XP · build real keyboard speed</p>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-tile ht-wpm">   <div class="hud-label">WPM</div>    <div class="hud-value" id="wpmVal">0</div></div>
+    <div class="hud-tile ht-acc">   <div class="hud-label">Accuracy</div><div class="hud-value" id="accVal">100%</div></div>
+    <div class="hud-tile ht-xp">    <div class="hud-label">⚡ XP</div>  <div class="hud-value" id="xpVal">0</div></div>
+    <div class="hud-tile ht-time">  <div class="hud-label">⏱ Time</div> <div class="hud-value" id="timeVal">—</div></div>
+    <div class="hud-tile ht-streak"><div class="hud-label">🔥 Streak</div><div class="hud-value" id="streakVal">0</div></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    <div class="progress-label"><span id="progSnip">—</span><span id="progPct">0%</span></div>
+  </div>
+
+  <div class="typing-box">
+    <div class="snippet-meta">
+      <span class="snip-tag" id="snipTag">—</span>
+      <span class="snip-xp" id="snipXP"></span>
+      <span class="snip-num" id="snipNum"></span>
+    </div>
+    <div class="code-display" id="codeDisplay"></div>
+    <input class="type-input" id="typeInput" placeholder="Type here when game starts…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" disabled>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="ov-badge">Speed Challenge</div>
+  <div class="ov-icon">⚡</div>
+  <div class="ov-title">C++ Type Speed</div>
+  <div class="ov-desc">Type real C++ code snippets as fast and accurately as you can. Accuracy gives you a bonus multiplier. Choose your challenge mode!</div>
+  <div class="mode-btns">
+    <div class="mode-btn active" data-time="60" data-snips="5" onclick="selMode(this)">
+      Sprint <span>60s · 5 snippets</span>
+    </div>
+    <div class="mode-btn" data-time="90" data-snips="8" onclick="selMode(this)">
+      Marathon <span>90s · 8 snippets</span>
+    </div>
+    <div class="mode-btn" data-time="120" data-snips="12" onclick="selMode(this)">
+      Endurance <span>120s · 12 snippets</span>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startGame()">LAUNCH GAME</button>
+</div>
+
+<script>
+const SNIPPETS = [
+  {code:'int main() { return 0; }', tag:'Main Func', xp:20},
+  {code:'cout << "Hello World!";',  tag:'Output', xp:15},
+  {code:'for(int i=0; i<10; i++)',  tag:'For Loop', xp:20},
+  {code:'if(x > 0 && y < 10)',      tag:'Condition', xp:20},
+  {code:'#include <iostream>',       tag:'Header', xp:12},
+  {code:'int arr[5] = {1,2,3,4,5};',tag:'Array', xp:26},
+  {code:'std::string name = "C++";', tag:'String', xp:24},
+  {code:'while(x != 0) { x--; }',   tag:'While Loop', xp:24},
+  {code:'void greet(string name)',   tag:'Function', xp:20},
+  {code:'class Animal { public: };', tag:'Class', xp:28},
+  {code:'int* ptr = &myVar;',        tag:'Pointer', xp:28},
+  {code:'vector<int> v = {1,2,3};',  tag:'Vector', xp:28},
+  {code:'cin >> x >> y;',            tag:'Input', xp:14},
+  {code:'float pi = 3.14159f;',      tag:'Float', xp:18},
+  {code:'bool flag = (x > 0);',      tag:'Boolean', xp:18},
+];
+
+let modeConfig={time:60,snips:5}, queue=[], idx=0;
+let current='', typed='', xp=0, wpm=0, accuracy=100;
+let totalChars=0, correctChars=0, streak=0;
+let timer=null, timeLeft=60, active=false, startTime=null;
+
+function selMode(el) {
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  modeConfig = {time:+el.dataset.time, snips:+el.dataset.snips};
+}
+
+function startGame() {
+  document.getElementById('overlay').style.display='none';
+  xp=0; wpm=0; accuracy=100; totalChars=0; correctChars=0; streak=0;
+  typed=''; idx=0; timeLeft=modeConfig.time; active=true;
+
+  const pool = [...SNIPPETS].sort(()=>Math.random()-.5);
+  queue = pool.slice(0, modeConfig.snips);
+
+  loadSnippet(0); updateHUD(); startTimer();
+  const inp=document.getElementById('typeInput');
+  inp.disabled=false; inp.value=''; inp.focus();
+}
+
+function loadSnippet(i) {
+  if (i >= queue.length) { finishGame(true); return; }
+  const s = queue[i];
+  current=s.code; typed=''; startTime=Date.now();
+  document.getElementById('snipTag').textContent  = s.tag;
+  document.getElementById('snipXP').textContent   = '⚡ +'+s.xp+' base XP';
+  document.getElementById('snipNum').textContent  = (i+1)+'/'+queue.length;
+  document.getElementById('typeInput').value      = '';
+  document.getElementById('typeInput').classList.remove('wrong');
+  document.getElementById('progFill').style.width = (i/queue.length*100)+'%';
+  document.getElementById('progSnip').textContent = 'Snippet '+(i+1)+' of '+queue.length;
+  document.getElementById('progPct').textContent  = Math.round(i/queue.length*100)+'%';
+  renderDisplay();
+}
+
+function renderDisplay() {
+  let html='';
+  for (let i=0; i<current.length; i++) {
+    const ch = esc(current[i]);
+    if (i < typed.length) {
+      html += typed[i]===current[i]
+        ? `<span class="c-ok">${ch}</span>`
+        : `<span class="c-err">${ch}</span>`;
+    } else if (i === typed.length) {
+      html += `<span class="c-cur">${ch}</span>`;
+    } else {
+      html += `<span class="c-wait">${ch}</span>`;
+    }
+  }
+  document.getElementById('codeDisplay').innerHTML = html;
+}
+
+function esc(c) { return c==='<'?'&lt;':c==='>'?'&gt;':c==='&'?'&amp;':c; }
+
+document.getElementById('typeInput').addEventListener('input', function() {
+  if (!active) return;
+  const prev = typed.length;
+  typed = this.value;
+
+  for (let i=prev; i<typed.length; i++) {
+    totalChars++;
+    if (i<current.length && typed[i]===current[i]) { correctChars++; streak++; }
+    else {
+      streak=0;
+      this.classList.add('wrong');
+      setTimeout(()=>this.classList.remove('wrong'), 300);
+    }
+  }
+  accuracy = totalChars>0 ? Math.round(correctChars/totalChars*100) : 100;
+  const elapsed = (Date.now()-startTime)/60000;
+  wpm = elapsed>0 ? Math.round((correctChars/5)/elapsed) : 0;
+  renderDisplay(); updateHUD();
+
+  if (typed === current) {
+    const s = queue[idx];
+    const accM   = accuracy>=95?1.5:accuracy>=80?1.2:1.0;
+    const strM   = streak>=10?1.3:1.0;
+    const earned = Math.round(s.xp * accM * strM);
+    xp += earned;
+    showXPPop('+'+earned+' XP');
+    idx++;
+    setTimeout(()=>loadSnippet(idx), 280);
+  }
+});
+
+function showXPPop(text) {
+  const el=document.createElement('div'); el.className='xp-pop'; el.textContent=text;
+  el.style.cssText=`top:${120+Math.random()*120}px;left:${200+Math.random()*300}px;`;
+  document.body.appendChild(el); setTimeout(()=>el.remove(),900);
+}
+
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(()=>{
+    timeLeft--;
+    const el=document.getElementById('timeVal');
+    el.textContent=timeLeft+'s';
+    el.style.color=timeLeft<=10?'#dc2626':timeLeft<=20?'#d97706':'';
+    if(timeLeft<=0){clearInterval(timer);finishGame(false);}
+  },1000);
+}
+
+function updateHUD() {
+  document.getElementById('wpmVal').textContent    = wpm;
+  document.getElementById('accVal').textContent    = accuracy+'%';
+  document.getElementById('xpVal').textContent     = xp;
+  document.getElementById('streakVal').textContent = streak;
+}
+
+function finishGame(done) {
+  active=false; clearInterval(timer);
+  const earnedXP = Math.min(xp,300);
+  const grade = accuracy>=95?'S':accuracy>=85?'A':accuracy>=70?'B':'C';
+  const gradeColor = {S:'#f59e0b',A:'#16a34a',B:'#2563eb',C:'#64748b'}[grade];
+  const ov=document.getElementById('overlay'); ov.style.display='flex';
+  ov.innerHTML=`
+    <div class="ov-badge">Grade ${grade}</div>
+    <div class="ov-icon">⚡</div>
+    <div class="ov-title" style="color:${gradeColor}">Grade ${grade}!</div>
+    <div class="result-row">
+      <div class="r-tile"><span class="r-val">${wpm}</span><span class="r-lbl">WPM</span></div>
+      <div class="r-tile"><span class="r-val">${accuracy}%</span><span class="r-lbl">Accuracy</span></div>
+      <div class="r-tile"><span class="r-val">+${earnedXP}</span><span class="r-lbl">XP Saved</span></div>
+    </div>
+    <div class="ov-desc">You typed at <strong style="color:var(--purple)">${wpm} WPM</strong> with <strong style="color:var(--green)">${accuracy}% accuracy</strong>. ${done?'All snippets done!':idx+'/'+queue.length+' snippets completed.'}</div>
+    <button class="btn-start" onclick="location.reload()">PLAY AGAIN</button>
+    <a href="/game/" class="btn-back">← Back to Games</a>
+  `;
+  saveXP(earnedXP);
+}
+
+function saveXP(xp) {
+  fetch('/game/update_xp/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':document.querySelector('meta[name="csrf-token"]').getAttribute('content')},body:JSON.stringify({score:xp,game:'typespeed'})}).then(r=>r.json()).then(d=>console.log('XP:',d));
+}
+</script>
+</body>
+</html>

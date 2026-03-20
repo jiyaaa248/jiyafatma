@@ -1,0 +1,302 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Memory Matrix | StoryLearnC++</title>
+<meta name="csrf-token" content="{{ csrf_token }}">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue:#2563eb; --blue-pale:#eff6ff; --blue-100:#dbeafe; --blue-200:#bfdbfe; --navy:#1e3a8a;
+  --bg:#f5f8ff; --surface:#fff; --border:#e2e8f0; --text:#0f172a; --text-3:#64748b; --text-4:#94a3b8;
+  --green:#16a34a; --green-pale:#f0fdf4; --green-100:#dcfce7; --green-200:#a7f3d0;
+  --amber:#d97706; --amber-pale:#fffbeb; --amber-100:#fef3c7;
+  --purple:#7c3aed; --purple-pale:#faf5ff; --purple-100:#ede9fe;
+  --red:#dc2626; --gold:#f59e0b;
+}
+body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
+body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(ellipse 70% 40% at 15% 10%,rgba(22,163,74,.04) 0%,transparent 60%); }
+
+/* NAV */
+.topnav { position:sticky; top:0; z-index:200; background:var(--surface); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,.06); height:64px; display:flex; align-items:center; padding:0 40px; gap:16px; }
+.tnav-logo { display:flex; align-items:center; gap:10px; font-size:17px; font-weight:900; color:var(--navy); text-decoration:none; flex-shrink:0; }
+.tnav-logo-icon { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--blue),#3b82f6); color:#fff; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.tnav-links { display:flex; gap:2px; flex:1; }
+.tnav-links a { color:var(--text-3); text-decoration:none; font-size:14px; font-weight:700; padding:7px 12px; border-radius:8px; transition:.15s; }
+.tnav-links a:hover { color:var(--blue); background:var(--blue-pale); }
+.nav-back { background:var(--blue-pale)!important; color:var(--blue)!important; border:1.5px solid var(--blue-200)!important; }
+
+/* PAGE */
+.page { position:relative; z-index:5; max-width:940px; margin:0 auto; padding:30px 28px 64px; }
+.game-title-row { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+.game-title-icon { width:52px; height:52px; border-radius:14px; background:var(--green-pale); border:1.5px solid var(--green-200); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; box-shadow:0 2px 8px rgba(22,163,74,.12); }
+.game-title-row h1 { font-size:24px; font-weight:900; color:var(--navy); letter-spacing:-.4px; }
+.game-title-row p  { font-size:13px; color:var(--text-3); margin-top:3px; font-weight:500; }
+
+/* HUD */
+.hud { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px; }
+.hud-tile { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; padding:14px 16px; box-shadow:0 1px 4px rgba(0,0,0,.05); position:relative; overflow:hidden; }
+.hud-tile::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0; }
+.ht-matches::after { background:var(--green); } .ht-time::after { background:var(--amber); }
+.ht-xp::after { background:var(--gold); } .ht-moves::after { background:var(--blue); }
+.hud-label { font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-4); margin-bottom:5px; }
+.hud-value { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; line-height:1; }
+.ht-matches .hud-value { color:var(--green); } .ht-time .hud-value { color:var(--amber); }
+.ht-xp .hud-value { color:var(--gold); } .ht-moves .hud-value { color:var(--blue); }
+
+/* BOARD */
+.board-section { background:var(--surface); border:1.5px solid var(--border); border-radius:18px; padding:24px; box-shadow:0 4px 20px rgba(37,99,235,.06); }
+.board { display:grid; gap:10px; }
+
+/* CARD */
+.mem-card { aspect-ratio:1.7; perspective:700px; cursor:pointer; }
+.card-inner { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .48s cubic-bezier(.175,.885,.32,1.275); border-radius:12px; }
+.mem-card.flipped .card-inner, .mem-card.matched .card-inner { transform:rotateY(180deg); }
+
+.card-front, .card-back { position:absolute; inset:0; border-radius:12px; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; }
+.card-front {
+  background:linear-gradient(150deg, var(--blue-pale), var(--blue-100));
+  border:1.5px solid var(--blue-200);
+  font-size:26px; color:var(--blue-200);
+  transition:.2s;
+}
+.mem-card:hover:not(.flipped):not(.matched) .card-front { border-color:var(--blue); color:var(--blue); box-shadow:0 4px 14px rgba(37,99,235,.15); transform:scale(1.02); }
+.card-back {
+  background:var(--surface); border:1.5px solid var(--green-200);
+  transform:rotateY(180deg); flex-direction:column; gap:4px; padding:10px;
+  box-shadow:0 4px 12px rgba(22,163,74,.1);
+}
+.card-back .c-cat { font-size:8px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--green); }
+.card-back .c-txt { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--navy); text-align:center; line-height:1.4; font-weight:700; word-break:break-all; }
+.card-back .c-sub { font-size:9px; color:var(--text-4); text-align:center; font-weight:600; }
+.mem-card.matched .card-back { background:var(--green-pale); border-color:var(--green); box-shadow:0 4px 14px rgba(22,163,74,.2); animation:matchPop .4s ease; }
+@keyframes matchPop { 0%,100%{transform:rotateY(180deg) scale(1)} 50%{transform:rotateY(180deg) scale(1.06)} }
+
+/* OVERLAY */
+#overlay { position:fixed; inset:0; z-index:300; background:rgba(245,248,255,.97); backdrop-filter:blur(5px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; padding:40px; }
+.ov-badge { font-size:11px; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--green); background:var(--green-pale); border:1.5px solid var(--green-200); padding:5px 16px; border-radius:40px; margin-bottom:20px; }
+.ov-icon  { font-size:60px; margin-bottom:16px; line-height:1; }
+.ov-title { font-size:30px; font-weight:900; color:var(--navy); text-align:center; letter-spacing:-1px; margin-bottom:10px; }
+.ov-desc  { font-size:14px; color:var(--text-3); text-align:center; line-height:1.75; max-width:420px; margin-bottom:24px; font-weight:500; }
+
+/* Difficulty selector */
+.diff-btns { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:24px; }
+.diff-btn { padding:12px 20px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-3); cursor:pointer; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; transition:.2s; text-align:center; }
+.diff-btn:hover, .diff-btn.active { background:var(--green-pale); border-color:var(--green-200); color:var(--green); }
+.diff-btn span { display:block; font-size:11px; color:var(--text-4); margin-top:3px; font-weight:600; }
+
+.result-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:380px; margin-bottom:24px; }
+.r-tile { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:14px 8px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.r-val  { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--green); display:block; }
+.r-lbl  { font-size:10px; font-weight:700; color:var(--text-4); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+.btn-start { background:linear-gradient(135deg,var(--green),#4ade80); color:#fff; border:none; padding:14px 48px; border-radius:40px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:900; cursor:pointer; transition:.25s; box-shadow:0 6px 20px rgba(22,163,74,.28); }
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(22,163,74,.38); }
+.btn-back { color:var(--text-4); font-size:13px; text-decoration:none; margin-top:12px; font-weight:600; }
+
+/* TOAST */
+#toast { position:fixed; top:76px; right:24px; z-index:500; display:flex; align-items:center; gap:10px; background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:12px 18px; font-size:13px; font-weight:700; box-shadow:0 4px 16px rgba(0,0,0,.1); transform:translateX(150%); transition:transform .32s cubic-bezier(.34,1.56,.64,1); max-width:260px; }
+#toast.show { transform:translateX(0); }
+#toast.good { border-color:var(--green-200); background:var(--green-pale); }
+#toast.bad  { border-color:#fecaca; background:#fef2f2; }
+
+@media(max-width:640px){ .hud{grid-template-columns:repeat(2,1fr);} .topnav{padding:0 18px;} .page{padding:18px 14px 48px;} }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="{% url 'accounts:landing' %}" class="tnav-logo">
+    <div class="tnav-logo-icon">📘</div>StoryLearnC++
+  </a>
+  <div class="tnav-links">
+    <a href="{% url 'game:game' %}" class="nav-back">← All Games</a>
+    <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="game-title-row">
+    <div class="game-title-icon">🧠</div>
+    <div>
+      <h1>Code Memory Matrix</h1>
+      <p>Match C++ snippets with descriptions · fewer moves = more XP</p>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-tile ht-matches"><div class="hud-label">✅ Matched</div><div class="hud-value" id="matchVal">0/0</div></div>
+    <div class="hud-tile ht-time"><div class="hud-label">⏱ Time Left</div><div class="hud-value" id="timeVal">—</div></div>
+    <div class="hud-tile ht-xp"><div class="hud-label">⚡ XP</div><div class="hud-value" id="xpVal">0</div></div>
+    <div class="hud-tile ht-moves"><div class="hud-label">🎯 Moves</div><div class="hud-value" id="movesVal">0</div></div>
+  </div>
+
+  <div class="board-section">
+    <div class="board" id="board"></div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="ov-badge">Memory Challenge</div>
+  <div class="ov-icon">🧠</div>
+  <div class="ov-title">Code Memory Matrix</div>
+  <div class="ov-desc">Match each C++ code snippet with its description. Fewer moves = bigger XP bonus. Choose your difficulty!</div>
+  <div class="diff-btns">
+    <div class="diff-btn active" data-pairs="6" data-time="90" data-cols="4" onclick="selDiff(this)">
+      Easy <span>6 pairs · 90s · up to 80 XP</span>
+    </div>
+    <div class="diff-btn" data-pairs="8" data-time="70" data-cols="4" onclick="selDiff(this)">
+      Medium <span>8 pairs · 70s · up to 120 XP</span>
+    </div>
+    <div class="diff-btn" data-pairs="10" data-time="55" data-cols="5" onclick="selDiff(this)">
+      Hard <span>10 pairs · 55s · up to 150 XP</span>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startGame()">START MATCHING</button>
+</div>
+
+<div id="toast"><span id="t-ico">✅</span><span id="t-msg"></span></div>
+
+<script>
+const CARDS = [
+  {code:'int x = 5;',    desc:'Integer variable',   cat:'Variables'},
+  {code:'cout << x;',    desc:'Print to console',   cat:'Output'},
+  {code:'cin >> x;',     desc:'Read from input',    cat:'Input'},
+  {code:'for(int i=0;i<n;i++)', desc:'For loop',   cat:'Loops'},
+  {code:'while(x > 0)', desc:'While loop',          cat:'Loops'},
+  {code:'if(x == 5)',   desc:'If condition',        cat:'Control'},
+  {code:'int arr[5]',   desc:'Array declaration',   cat:'Arrays'},
+  {code:'return 0;',    desc:'Return from main',    cat:'Functions'},
+  {code:'#include<iostream>', desc:'Include library', cat:'Headers'},
+  {code:'string s = "Hi";', desc:'String variable', cat:'Strings'},
+];
+
+let selDiffConfig = {pairs:6, time:90, cols:4};
+let flipped=[], matched=0, moves=0, xp=0, timer=null, timeLeft=90, totalPairs=6, canFlip=true;
+
+function selDiff(el) {
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selDiffConfig = { pairs:+el.dataset.pairs, time:+el.dataset.time, cols:+el.dataset.cols };
+}
+
+function startGame() {
+  document.getElementById('overlay').style.display = 'none';
+  flipped=[]; matched=0; moves=0; xp=0; canFlip=true;
+  totalPairs = selDiffConfig.pairs;
+  timeLeft   = selDiffConfig.time;
+
+  const pool  = CARDS.slice(0, totalPairs);
+  const deck  = [...pool.map(c=>({...c,side:'code',uid:Math.random()})), ...pool.map(c=>({...c,side:'desc',uid:Math.random()}))];
+  shuffle(deck);
+
+  const board = document.getElementById('board');
+  board.style.gridTemplateColumns = `repeat(${selDiffConfig.cols}, 1fr)`;
+  board.innerHTML = '';
+
+  deck.forEach((c,i) => {
+    const el = document.createElement('div');
+    el.className = 'mem-card';
+    el.dataset.pair = c.code;
+    el.dataset.side = c.side;
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">?</div>
+        <div class="card-back">
+          <div class="c-cat">${c.side==='code' ? c.cat : '📖 Description'}</div>
+          <div class="c-txt">${c.side==='code' ? c.code : c.desc}</div>
+        </div>
+      </div>`;
+    el.addEventListener('click', () => flipCard(el, c));
+    board.appendChild(el);
+  });
+
+  updateHUD(); startTimer();
+}
+
+function flipCard(el, data) {
+  if (!canFlip || el.classList.contains('flipped') || el.classList.contains('matched')) return;
+  el.classList.add('flipped');
+  flipped.push({el, data});
+  if (flipped.length === 2) checkMatch();
+}
+
+function checkMatch() {
+  canFlip = false; moves++;
+  const [a, b] = flipped;
+  const isMatch = (a.data.code === b.data.code) && (a.data.side !== b.data.side);
+  if (isMatch) {
+    a.el.classList.add('matched'); b.el.classList.add('matched');
+    matched++;
+    const bonus = Math.max(8, 28 - moves);
+    xp += bonus;
+    toast(`✅ Match! +${bonus} XP`, true);
+    flipped=[]; canFlip=true; updateHUD();
+    if (matched === totalPairs) finishGame(true);
+  } else {
+    setTimeout(() => {
+      a.el.classList.remove('flipped'); b.el.classList.remove('flipped');
+      flipped=[]; canFlip=true;
+      toast('❌ No match — keep trying!', false);
+    }, 1000);
+  }
+  updateHUD();
+}
+
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    const el = document.getElementById('timeVal');
+    el.textContent = timeLeft+'s';
+    el.style.color = timeLeft<=10 ? '#dc2626' : '';
+    if (timeLeft<=0) { clearInterval(timer); finishGame(false); }
+  }, 1000);
+}
+
+function updateHUD() {
+  document.getElementById('matchVal').textContent  = matched+'/'+totalPairs;
+  document.getElementById('xpVal').textContent    = xp;
+  document.getElementById('movesVal').textContent = moves;
+}
+
+function finishGame(won) {
+  clearInterval(timer);
+  const earnedXP = won ? Math.min(xp,150) : Math.floor(xp*.5);
+  const ov = document.getElementById('overlay');
+  ov.style.display = 'flex';
+  ov.innerHTML = `
+    <div class="ov-badge">${won?'Victory!':'Time Up!'}</div>
+    <div class="ov-icon">${won?'🎉':'⏰'}</div>
+    <div class="ov-title">${won?'Matrix Cleared!':'Time\'s Up!'}</div>
+    <div class="result-row">
+      <div class="r-tile"><span class="r-val">${matched}/${totalPairs}</span><span class="r-lbl">Matched</span></div>
+      <div class="r-tile"><span class="r-val">${moves}</span><span class="r-lbl">Moves</span></div>
+      <div class="r-tile"><span class="r-val">+${earnedXP}</span><span class="r-lbl">XP Earned</span></div>
+    </div>
+    <div class="ov-desc">${won ? 'Perfect memory! XP saved to your profile.' : 'You matched '+matched+' pairs. Keep training!'}</div>
+    <button class="btn-start" onclick="location.reload()">PLAY AGAIN</button>
+    <a href="/game/" class="btn-back">← Back to Games</a>
+  `;
+  saveXP(earnedXP);
+}
+
+function shuffle(a) { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
+let _tt;
+function toast(msg, good) {
+  const el=document.getElementById('toast');
+  document.getElementById('t-ico').textContent = good?'✅':'❌';
+  document.getElementById('t-msg').textContent = msg;
+  el.className='show '+(good?'good':'bad');
+  clearTimeout(_tt); _tt=setTimeout(()=>el.className='',1700);
+}
+
+function saveXP(xp) {
+  fetch('/game/update_xp/', { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':document.querySelector('meta[name="csrf-token"]').getAttribute('content')}, body:JSON.stringify({score:xp,game:'memory'}) }).then(r=>r.json()).then(d=>console.log('XP:',d));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,608 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Hub | StoryLearnC++</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:       #233b8f;
+  --navy-dark:  #172869;
+  --navy-deeper:#0f1d4a;
+  --accent:     #f5a623;
+  --accent-light:#ffd07a;
+  --accent-pale: #fff8ed;
+  --teal:       #1ab8d8;
+  --bg:         #f0f4ff;
+  --surface:    #ffffff;
+  --border:     #d8e2f8;
+  --border-2:   #c5cef2;
+  --text:       #1e293b;
+  --text-2:     #334155;
+  --text-3:     #5a6a8a;
+  --text-4:     #94a3b8;
+  --blue-pale:  #eef1fb;
+  --blue-100:   #d6dcf8;
+  --green:      #16a34a;
+  --green-pale: #f0fdf4;
+  --green-100:  #dcfce7;
+  --amber:      #d97706;
+  --amber-pale: #fffbeb;
+  --amber-100:  #fef3c7;
+  --purple:     #7c3aed;
+  --purple-pale:#faf5ff;
+  --purple-100: #ede9fe;
+  --red:        #dc2626;
+  --gold:       #f59e0b;
+  --radius:     14px;
+  --shadow-sm:  0 1px 3px rgba(35,59,143,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:     0 4px 16px rgba(35,59,143,.10), 0 1px 3px rgba(0,0,0,.06);
+  --shadow-lg:  0 16px 48px rgba(35,59,143,.16), 0 4px 12px rgba(0,0,0,.07);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(circle, rgba(35,59,143,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ══════════════════════════════
+   TOP NAVBAR
+══════════════════════════════ */
+.topnav {
+  background: var(--navy);
+  box-shadow: 0 2px 24px rgba(15,29,74,0.30);
+  position: sticky; top: 0; z-index: 200;
+  transition: transform 0.3s ease; flex-shrink: 0;
+}
+.topnav-inner {
+  max-width: 100%; padding: 0 28px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+
+.logo-h {
+  display: flex; align-items: center; gap: 10px;
+  color: #fff; font-size: 18px; font-weight: 800;
+  letter-spacing: -0.3px; text-decoration: none; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.logo-h .logo-icon {
+  width: 34px; height: 34px; background: var(--accent);
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 16px;
+  transition: transform 0.3s; flex-shrink: 0;
+}
+.logo-h:hover .logo-icon { transform: rotate(-8deg) scale(1.1); }
+
+.topnav-links {
+  display: flex; align-items: center; gap: 2px; flex: 1; padding-left: 20px;
+}
+.topnav-links a {
+  color: rgba(255,255,255,0.75); text-decoration: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+}
+.topnav-links a:hover { color: #fff; background: rgba(255,255,255,0.10); }
+.topnav-links a.active {
+  color: #fff; background: rgba(255,255,255,0.13); font-weight: 700;
+}
+
+.topnav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.tnav-xp {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(245,166,35,0.15);
+  border: 1px solid rgba(245,166,35,0.30);
+  padding: 7px 16px; border-radius: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700; color: var(--accent);
+  white-space: nowrap;
+}
+.xp-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(245,166,35,0.7);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  text-decoration: none;
+  font-weight: 700; font-size: 13px;
+  color: var(--navy);
+  padding: 8px 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+}
+.back-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--navy-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(245,166,35,0.35);
+}
+.back-btn svg { transition: transform 0.22s; flex-shrink: 0; }
+.back-btn:hover svg { transform: translateX(-3px); }
+
+/* ══════════════════════════════
+   MAIN CONTENT (full width)
+══════════════════════════════ */
+.main { flex: 1; overflow-x: hidden; position: relative; z-index: 1; }
+
+/* ─── HERO ─── */
+.hero {
+  max-width: 1120px; margin: 0 auto;
+  padding: 52px 40px 40px;
+  display: flex; align-items: flex-start; gap: 48px; flex-wrap: wrap;
+}
+
+.hero-left { flex: 1; min-width: 280px; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--navy); background: var(--blue-pale);
+  border: 1.5px solid var(--blue-100);
+  padding: 5px 14px; border-radius: 40px;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 800; line-height: 1.1;
+  letter-spacing: -1.5px; color: var(--navy-dark);
+  margin-bottom: 16px;
+}
+.hero h1 .hl {
+  color: var(--navy); position: relative; display: inline-block;
+}
+.hero h1 .hl::after {
+  content: '';
+  position: absolute; bottom: 2px; left: 0; right: 0;
+  height: 4px; background: var(--accent);
+  border-radius: 2px; opacity: 0.6;
+}
+
+.hero-sub {
+  font-size: 15px; color: var(--text-3); line-height: 1.75;
+  max-width: 480px; margin-bottom: 32px; font-weight: 500;
+}
+
+.hero-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.h-stat {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 22px;
+  box-shadow: var(--shadow-sm); text-align: center; transition: all 0.2s;
+}
+.h-stat:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: var(--shadow); }
+.h-stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1;
+}
+.h-stat-lbl { font-size: 11px; color: var(--text-4); margin-top: 4px; font-weight: 600; }
+
+.hero-right { min-width: 260px; flex-shrink: 0; }
+.xp-progress-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow); position: relative; overflow: hidden;
+}
+.xp-progress-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--navy), var(--teal));
+}
+.xp-progress-card .card-label {
+  font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-4); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.xp-big {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px; font-weight: 700; color: var(--navy-dark); margin-bottom: 14px; line-height: 1;
+}
+.xp-big small { font-size: 14px; color: var(--text-4); }
+.xp-bar-track {
+  height: 10px; background: var(--blue-100);
+  border-radius: 10px; overflow: hidden; margin-bottom: 8px;
+}
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--navy), var(--teal));
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(35,59,143,0.3);
+  transition: width 1.4s cubic-bezier(.34,1.56,.64,1);
+}
+.xp-bar-labels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text-4); font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── GAMES GRID ─── */
+.games-wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding: 0 40px 72px;
+}
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.section-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px; font-weight: 800; color: var(--navy-dark);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block; width: 4px; height: 18px;
+  background: linear-gradient(to bottom, var(--navy), var(--teal));
+  border-radius: 2px;
+}
+.section-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700; color: var(--navy);
+  background: var(--blue-pale); border: 1px solid var(--blue-100);
+  padding: 4px 12px; border-radius: 20px;
+}
+
+.cards-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 22px;
+}
+
+/* ─── GAME CARD ─── */
+.game-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  text-decoration: none; color: var(--text);
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s ease, border-color .2s;
+}
+.game-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+.gc-blue:hover   { border-color: var(--blue-100); }
+.gc-green:hover  { border-color: #a7f3d0; }
+.gc-purple:hover { border-color: #c4b5fd; }
+
+.card-accent { height: 5px; }
+.gc-blue   .card-accent { background: linear-gradient(90deg, var(--navy), var(--teal)); }
+.gc-green  .card-accent { background: linear-gradient(90deg, var(--green), #4ade80); }
+.gc-purple .card-accent { background: linear-gradient(90deg, var(--purple), #a78bfa); }
+
+.card-visual {
+  height: 190px; position: relative;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.gc-blue   .card-visual { background: linear-gradient(150deg, var(--blue-pale) 0%, var(--blue-100) 100%); }
+.gc-green  .card-visual { background: linear-gradient(150deg, #f0fff8 0%, #dcfce7 100%); }
+.gc-purple .card-visual { background: linear-gradient(150deg, #faf5ff 0%, #ede9fe 100%); }
+
+.snip {
+  position: absolute;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  padding: 3px 9px; border-radius: 6px;
+  white-space: nowrap; opacity: 0;
+  animation: snipFloat 7s ease-in-out infinite;
+}
+.gc-blue   .snip { background: var(--blue-100); color: var(--navy-dark); }
+.gc-green  .snip { background: #dcfce7; color: #15803d; }
+.gc-purple .snip { background: #ede9fe; color: #6d28d9; }
+@keyframes snipFloat {
+  0%   { opacity:0; transform:translateY(18px) rotate(-1deg); }
+  20%  { opacity:1; }
+  80%  { opacity:1; }
+  100% { opacity:0; transform:translateY(-18px) rotate(1deg); }
+}
+
+.card-emoji {
+  font-size: 72px; position: relative; z-index: 2;
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,.12));
+  animation: emojiFloat 4s ease-in-out infinite;
+}
+.gc-green  .card-emoji { animation-delay: -1.3s; }
+.gc-purple .card-emoji { animation-delay: -2.6s; }
+@keyframes emojiFloat {
+  0%,100% { transform: translateY(0) rotate(-2deg) scale(1); }
+  50%     { transform: translateY(-10px) rotate(2deg) scale(1.05); }
+}
+
+.card-body { padding: 22px 24px 24px; display: flex; flex-direction: column; flex: 1; }
+.tag-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.tag {
+  font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 5px;
+}
+.t-blue   { background: var(--blue-pale); color: var(--navy); border: 1px solid var(--blue-100); }
+.t-green  { background: var(--green-pale); color: var(--green); border: 1px solid #bbf7d0; }
+.t-purple { background: var(--purple-pale); color: var(--purple); border: 1px solid #ddd6fe; }
+.t-amber  { background: var(--amber-pale); color: var(--amber); border: 1px solid #fde68a; }
+.t-red    { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 800; color: var(--navy-dark);
+  margin-bottom: 8px; letter-spacing: -.3px; line-height: 1.2;
+}
+.card-desc {
+  font-size: 13px; color: var(--text-3); line-height: 1.7;
+  margin-bottom: 20px; flex: 1; font-weight: 500;
+}
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 14px; border-top: 1px solid var(--border);
+}
+.card-xp {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700; color: var(--amber);
+}
+.diff {
+  font-size: 9px; font-weight: 800; padding: 4px 10px;
+  border-radius: 20px; letter-spacing: 1.5px; text-transform: uppercase;
+}
+.d-easy { background: var(--green-100); color: var(--green); border: 1px solid #bbf7d0; }
+.d-med  { background: var(--amber-100); color: var(--amber); border: 1px solid #fde68a; }
+.d-hard { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+
+.card-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 16px; padding: 13px;
+  border-radius: 10px; font-size: 14px; font-weight: 800;
+  transition: all .2s ease; letter-spacing: .3px;
+}
+.gc-blue   .card-btn { background: var(--blue-pale); color: var(--navy); }
+.gc-green  .card-btn { background: var(--green-pale); color: var(--green); }
+.gc-purple .card-btn { background: var(--purple-pale); color: var(--purple); }
+.gc-blue:hover   .card-btn { background: var(--navy); color: #fff; box-shadow: 0 4px 14px rgba(35,59,143,.35); }
+.gc-green:hover  .card-btn { background: var(--green); color: #fff; box-shadow: 0 4px 14px rgba(22,163,74,.35); }
+.gc-purple:hover .card-btn { background: var(--purple); color: #fff; box-shadow: 0 4px 14px rgba(124,58,237,.35); }
+
+/* ─── BOTTOM BANNER ─── */
+.banner-wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding: 0 40px 80px;
+}
+.banner {
+  background: linear-gradient(135deg, var(--navy-deeper) 0%, var(--navy) 60%, #3a5fc8 100%);
+  border-radius: 20px; padding: 44px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  box-shadow: 0 12px 40px rgba(35,59,143,.28);
+}
+.ban-text h3 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.ban-text p  { font-size: 14px; color: rgba(255,255,255,.70); font-weight: 500; }
+.ban-btns    { display: flex; gap: 10px; flex-wrap: wrap; }
+.ban-btn {
+  padding: 12px 24px; border-radius: 10px;
+  font-size: 14px; font-weight: 800; text-decoration: none; transition: all .2s ease;
+}
+.ban-btn-white { background: #fff; color: var(--navy-dark); }
+.ban-btn-white:hover { background: var(--accent); color: var(--navy-dark); }
+.ban-btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.28); }
+.ban-btn-ghost:hover { background: rgba(255,255,255,.22); }
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 1024px) {
+  .cards-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .topnav-inner { padding: 0 16px; }
+  .topnav-links { display: none; }
+  .hero, .games-wrap, .banner-wrap { padding-left: 16px; padding-right: 16px; }
+  .hero { padding-top: 32px; padding-bottom: 24px; flex-direction: column; gap: 24px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .banner { padding: 28px 20px; }
+  .tnav-xp { display: none; }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--navy); }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAVBAR ONLY ══ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+
+    <a href="#" class="logo-h">
+      <div class="logo-icon">📘</div>
+      StoryLearnC++
+    </a>
+
+    <div class="topnav-links">
+      
+    </div>
+
+    <div class="topnav-right">
+      <div class="tnav-xp">
+        <span class="xp-dot"></span>
+        {{ user_xp }} XP &nbsp;·&nbsp; Lv.{{ user_level }}
+      </div>
+      <a href="{% url 'accounts:dashboard' %}" class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Dashboard
+      </a>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ══ MAIN (full width, no sidebar) ══ -->
+<main class="main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-badge">🎮 C++ Battle Arena</div>
+      <h1>Play Games.<br><span class="hl">Master C++.</span></h1>
+      <p class="hero-sub">Three interactive games that make C++ syntax stick. Every correct answer earns real XP — tracked live on your profile.</p>
+      <div class="hero-stats">
+        <div class="h-stat"><div class="h-stat-val">3</div><div class="h-stat-lbl">Games</div></div>
+        <div class="h-stat"><div class="h-stat-val">650</div><div class="h-stat-lbl">Max XP</div></div>
+        <div class="h-stat"><div class="h-stat-val">Lv.{{ user_level }}</div><div class="h-stat-lbl">Your Level</div></div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="xp-progress-card">
+        <div class="card-label">📊 Level Progress</div>
+        <div class="xp-big">{{ user_xp }}<small> / {{ user_level }}00 XP</small></div>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpFill" style="width:0%"></div>
+        </div>
+        <div class="xp-bar-labels">
+          <span>Lv.{{ user_level }}</span>
+          <span id="xpPct">0%</span>
+          <span>Lv.{{ user_level|add:1 }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMES -->
+  <div class="games-wrap">
+    <div class="section-head">
+      <div class="section-label">Choose your mission</div>
+      <div class="section-badge">03 games</div>
+    </div>
+
+    <div class="cards-grid">
+
+      <!-- 1. Firewall -->
+      <a href="{% url 'game:firewall' %}" class="game-card gc-blue">
+        <div class="card-accent"></div>
+        <div class="card-visual">
+          <span class="snip" style="top:18%;left:7%;animation-delay:0s">int x = 5;</span>
+          <span class="snip" style="top:52%;right:7%;animation-delay:2.5s">cout &lt;&lt; x;</span>
+          <span class="snip" style="bottom:16%;left:16%;animation-delay:5s">return 0;</span>
+          <span class="card-emoji">🛡️</span>
+        </div>
+        <div class="card-body">
+          <div class="tag-row">
+            <span class="tag t-blue">Syntax</span>
+            <span class="tag t-blue">Reflex</span>
+          </div>
+          <div class="card-title">Firewall Guardian</div>
+          <div class="card-desc">C++ code packets flood the screen. Click valid syntax to earn XP — hit a bug and your shield takes damage. Survive as long as you can!</div>
+          <div class="card-foot">
+            <span class="card-xp">⚡ Up to 200 XP</span>
+            <span class="diff d-med">Medium</span>
+          </div>
+          <div class="card-btn">Play Now →</div>
+        </div>
+      </a>
+
+      <!-- 2. Memory -->
+      <a href="{% url 'game:memory' %}" class="game-card gc-green">
+        <div class="card-accent"></div>
+        <div class="card-visual">
+          <span class="snip" style="top:18%;left:7%;animation-delay:1s">for loop</span>
+          <span class="snip" style="top:52%;right:7%;animation-delay:3.5s">if(x==5)</span>
+          <span class="snip" style="bottom:16%;left:16%;animation-delay:6s">array[]</span>
+          <span class="card-emoji">🧠</span>
+        </div>
+        <div class="card-body">
+          <div class="tag-row">
+            <span class="tag t-green">Memory</span>
+            <span class="tag t-green">Matching</span>
+          </div>
+          <div class="card-title">Code Memory Matrix</div>
+          <div class="card-desc">Flip cards to match C++ code snippets with their descriptions. Fewer moves = bigger XP bonus. Train your pattern recognition!</div>
+          <div class="card-foot">
+            <span class="card-xp">⚡ Up to 150 XP</span>
+            <span class="diff d-easy">Easy</span>
+          </div>
+          <div class="card-btn">Play Now →</div>
+        </div>
+      </a>
+
+      <!-- 3. Type Speed -->
+      <a href="{% url 'game:typespeed' %}" class="game-card gc-purple">
+        <div class="card-accent"></div>
+        <div class="card-visual">
+          <span class="snip" style="top:18%;left:7%;animation-delay:.5s">int main(){}</span>
+          <span class="snip" style="top:52%;right:7%;animation-delay:3s">#include</span>
+          <span class="snip" style="bottom:16%;left:16%;animation-delay:5.5s">class Dog{};</span>
+          <span class="card-emoji">⚡</span>
+        </div>
+        <div class="card-body">
+          <div class="tag-row">
+            <span class="tag t-purple">Speed</span>
+            <span class="tag t-purple">Typing</span>
+          </div>
+          <div class="card-title">C++ Type Speed</div>
+          <div class="card-desc">Race the clock typing real C++ code. Accuracy multiplies your XP. Build blazing keyboard speed for exams and competitive programming!</div>
+          <div class="card-foot">
+            <span class="card-xp">⚡ Up to 300 XP</span>
+            <span class="diff d-hard">Hard</span>
+          </div>
+          <div class="card-btn">Play Now →</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- BANNER -->
+  <div class="banner-wrap">
+    <div class="banner">
+      <div class="ban-text">
+        <h3>🏆 See your global ranking</h3>
+        <p>All game XP counts toward the leaderboard. Start climbing today!</p>
+      </div>
+      <div class="ban-btns">
+        <a href="{% url 'learning:leaderboard' %}" class="ban-btn ban-btn-white">View Leaderboard</a>
+        <a href="{% url 'accounts:dashboard' %}"   class="ban-btn ban-btn-ghost">My Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  window.addEventListener('load', () => {
+    const xp  = {{ user_xp }};
+    const pct = xp % 100;
+    setTimeout(() => {
+      document.getElementById('xpFill').style.width = pct + '%';
+      document.getElementById('xpPct').textContent  = pct + '%';
+    }, 400);
+  });
+
+  let lastY = 0;
+  const topnav = document.querySelector('.topnav');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    topnav.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  });
+</script>
+</body>
+</html>
